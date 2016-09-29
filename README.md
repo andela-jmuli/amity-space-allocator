@@ -11,14 +11,14 @@ Amity Space Allocator is a console application that allocates rooms to fellows a
 
 * Navigate to your directory choice
 * Clone the repository:
-        * Using SSH: ``` data ```
-        * Using HTTP ``` data ```
+ * Using SSH: ``` data ```
+ * Using HTTP ``` data ```
 * Setup a virtualenvironment for dependencies:
-        * virtualenv {{ desired name }}
+ * virtualenv {{ desired name }}
 * Activate your environment
-        * ``` cd ``` into folder and run ``` source bin/activate ```
+ * ``` cd ``` into folder and run ``` source bin/activate ```
 * Install the dependencies:
-        * ``` pip install -r reqiuirements.txt ```
+ * ``` pip install -r reqiuirements.txt ```
 
 ## Usage:
 
@@ -27,4 +27,4 @@ Amity Space Allocator is a console application that allocates rooms to fellows a
 ## LIcence:
 
 ## Credits:
-        * [Joseph Muli](github.com/andela-jmuli)
+* [Joseph Muli](github.com/andela-jmuli)
