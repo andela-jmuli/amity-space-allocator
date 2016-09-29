@@ -13,7 +13,6 @@ class Room(object):
                 pass
 
 
-
         def print_room(self, args):
                 pass
 
@@ -22,4 +21,17 @@ class Room(object):
                 pass
 
 
-r1 = Room("Galaxy", "Office")
+class Office(Room):
+
+        def __init__(self):
+                pass
+
+        max_capacity = 4
+
+
+class LivingSpace(Room):
+
+        def __init__(self):
+                pass
+
+        max_capacity = 6

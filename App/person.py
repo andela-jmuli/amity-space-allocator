@@ -24,3 +24,16 @@ class Person(Amity):
 
         def print_unallocated(self, args):
                 pass
+
+
+class Staff(Person):
+
+    def __init__(self):
+        pass
+
+
+
+class Fellow(Person):
+
+    def __init__(self):
+        pass
