@@ -6,10 +6,8 @@ class Person(Amity):
                 Person defines the main attributes and methods common
                 to both Fellow and Class
          """
-        def __init__(self, id, person_name, job_type):
-                self.id = id
-                self.person_name = person_name
-                self.job_type = job_type
+        def __init__(self):
+                pass
 
 
         def add_person(self, args):
