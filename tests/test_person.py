@@ -5,28 +5,27 @@ from App.person import Person
 
 class TestPerson(unittest.TestCase):
 
-        # def setUp(self):
-        #         self.person = Person()
+        def setUp(self):
+                self.person = Person()
 
         def test_person_class_instance(self):
-                person = Person()
-                self.assertIsInstance(person, Person)
+                self.assertIsInstance(self.person, Person)
 
 
         def test_it_creates_a_person(self):
-                person = Person()
-                person.add_person('Joseph', 'Muli', 'Fellow', 'Yes')
-                self.assertEqual(person.first_name, 'Joseph')
+                self.person.add_person('Joseph', 'Muli', 'Fellow', 'Yes')
+                self.assertEqual(self.person.first_name, 'Joseph')
 
 
         def test_reallocation(self):
-                person = Person()
-                person.reallocate_person(1, 'oculus')
-                self.assertEqual(person.room_name, 'oculus')
+                self.person.reallocate_person(1, 'oculus')
+                self.assertEqual(self.person.room_name, 'oculus')
 
 
         def test_loads_people(self):
-                pass
+                test_file = self.person.load_people('list.txt')
+                self.assertEqual(self.person.total_people, 5)
+
 
         def test_printing_unallocated(self):
                 pass
