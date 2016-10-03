@@ -12,9 +12,10 @@ class TestPerson(unittest.TestCase):
                 self.assertIsInstance(self.person, Person)
 
 
-        def test_it_creates_a_person(self):
+        def test_it_adds_a_person(self):
                 self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
-                self.assertEqual(self.person.first_name, 'Joseph')
+                self.person.add_person('Michael', 'Kamau', 'Fellow', 'Y')
+                self.assertEqual(len(self.person.total_people), 2)
 
 
         def test_reallocation(self):
