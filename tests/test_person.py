@@ -15,8 +15,8 @@ class TestPerson(unittest.TestCase):
 
         def test_it_creates_a_person(self):
                 person = Person()
-                person.add_person('Jojo', 'Fellow', 'Yes')
-                self.assertEqual(person.person_name, 'Jojo')
+                person.add_person('Joseph', 'Muli', 'Fellow', 'Yes')
+                self.assertEqual(person.first_name, 'Joseph')
 
 
         def test_reallocation(self):
