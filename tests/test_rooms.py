@@ -16,6 +16,12 @@ class TestRoom(unittest.TestCase):
                 self.room.create_room('narnia', 'whimm', 'kelly')
                 self.assertEqual(len(self.room.total_rooms), 3)
 
+        def test_it_allocates_room_type(self):
+                self.room.create_room('vanish', 'galaxy')
+                self.room.allocate_room_type('vanish', 'Office')
+                self.room.allocate_room_type('galaxy', 'Office')
+                self.assertEqual(len(self.room.offices), 2)
+
 
 
 

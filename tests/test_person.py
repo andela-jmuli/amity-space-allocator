@@ -13,7 +13,7 @@ class TestPerson(unittest.TestCase):
 
 
         def test_it_creates_a_person(self):
-                self.person.add_person('Joseph', 'Muli', 'Fellow', 'Yes')
+                self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
                 self.assertEqual(self.person.first_name, 'Joseph')
 
 
