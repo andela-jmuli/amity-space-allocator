@@ -3,9 +3,8 @@ from room import Room
 class LivingSpace(Room):
 
         def __init__(self):
-                pass
+                super(Room, self).__init__()
 
         max_capacity = 6
 
-        def allocate_living_space(self, room_name):
-                pass
+

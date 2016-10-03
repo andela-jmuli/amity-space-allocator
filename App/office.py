@@ -3,9 +3,8 @@ from room import Room
 class Office(Room):
 
         def __init__(self):
-                pass
+                super(Room, self).__init__()
 
         max_capacity = 4
 
-        def allocate_office(self, room_name):
-                pass
+
