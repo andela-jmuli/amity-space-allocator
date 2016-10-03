@@ -64,7 +64,7 @@ class Room(Amity):
         def print_allocations(self, filename, *args):
                 # loop through all rooms
                 for room in self.total_rooms:
-                        print '{0}'.format(room.room_name)
+                        data +=  '{0}'.format(room.room_name)
                         if room.room_occupants:
                                 for person in room.room_occupants:
                                         # save to output object
