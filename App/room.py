@@ -14,7 +14,6 @@ class Room(Amity):
                 self.room_occupants = []
 
 
-
         def create_room(self, *args):
                 # first checks length of args(number of room names provided)
                 if len(args) > 1:
@@ -62,7 +61,18 @@ class Room(Amity):
                         self.livingspaces.append(room_name)
 
 
-        def print_allocations(self, args):
-                pass
-
-
+        def print_allocations(self, filename, *args):
+                # loop through all rooms
+                for room in self.total_rooms:
+                        print '{0}'.format(room.room_name)
+                        if room.room_occupants:
+                                for person in room.room_occupants:
+                                        # save to output object
+                                        data +=  '{0}'.format(person.p_name)
+                        else:
+                                data +=  "The room is currently empty"
+                        return data
+                if '-o' in args:
+                        with open('allocations.txt', 'w') as f:
+                                # write data as output
+                                write_allocations = f.write(data)
