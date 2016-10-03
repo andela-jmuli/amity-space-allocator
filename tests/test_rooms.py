@@ -24,10 +24,5 @@ class TestRoom(unittest.TestCase):
 
 
 
-
-        def test_it_prints_rooms(self):
-                pass
-
-
         def test_it_prints_allocations(self):
                 pass
