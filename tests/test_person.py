@@ -5,16 +5,24 @@ from App.person import Person
 
 class TestPerson(unittest.TestCase):
 
+        # def setUp(self):
+        #         self.person = Person()
+
         def test_person_class_instance(self):
-                pass
+                person = Person()
+                self.assertIsInstance(person, Person)
 
 
         def test_it_creates_a_person(self):
-                pass
+                person = Person()
+                person.add_person('Jojo', 'Fellow', 'Yes')
+                self.assertEqual(person.person_name, 'Jojo')
 
 
         def test_reallocation(self):
-                pass
+                person = Person()
+                person.reallocate_person(1, 'oculus')
+                self.assertEqual(person.room_name, 'oculus')
 
 
         def test_loads_people(self):

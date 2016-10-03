@@ -5,12 +5,18 @@ from App.room import Room
 
 class TestRoom(unittest.TestCase):
 
+        def setUp(self):
+                self.room = Room()
+
         def test_room_class_instance(self):
-                pass
+                self.assertIsInstance(self.room, Room)
 
 
         def test_it_creates_rooms(self):
-                pass
+                self.room.create_room('narnia', 'whimm', 'kelly')
+                self.assertEqual(len(self.room.total_rooms), 3)
+
+
 
 
         def test_it_prints_rooms(self):
