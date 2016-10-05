@@ -15,7 +15,6 @@ class Person(Amity):
             self.room_occupants = []
 
 
-
         def add_person(self, first_name, last_name, type, accomodation):
                 self.first_name = first_name
                 self.last_name = last_name
@@ -36,6 +35,22 @@ class Person(Amity):
                         return "Person allocated to room"
                     else:
                         return "There are currently no rooms in Amity"
+
+
+            def print_room(self, room_name):
+                for rm in self.total_rooms:
+                        # first check whether room is existent
+                        if room_name not in self.total_rooms:
+                                return "The room does not exist!"
+
+                        # loop through rooms and identify
+                        if rm == room_name:
+                                # check number of occupants
+                                if rm.room_occupants > 1:
+                                        for p in rm.room_occupants:
+                                                print p
+                                else:
+                                        print "The room is empty!"
 
 
 
