@@ -1,3 +1,10 @@
+import os
+from models import Room
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+
 from amity import Amity
 
 
@@ -5,21 +12,32 @@ class Room(Amity):
         """ Room class subclasses Amity and is super to Office and LIvingSpace
                 Room also defines the common attributes between Office and LivingSpace
         """
+        # engine = create_engine('sqlite://amity.db', echo=False)
+
+        # session = sessionmaker()
+        # Session.configure(bind=engine)
+        # session = Session()
+
+
         def __init__(self):
                 super(Amity, self).__init__()
+                self.room_occupants = []
                 self.offices = []
                 self.livingspaces = []
                 self.total_rooms = []
                 self.total_people = []
-                self.room_occupants = []
 
 
         def create_room(self, *args):
+                """
+        This method creates rooms based on the input provided ~ multiple arguments suggest multiple rooms created
+                """
                 # first checks length of args(number of room names provided)
                 if len(args) > 1:
                         new_rooms = []
                         for items in args:
                                 new_rooms.append(items)
+
                         for room in new_rooms:
                                 self.room_name = room
                                 # add new rooms to total rooms list
@@ -76,4 +94,6 @@ class Room(Amity):
                         with open('allocations.txt', 'w') as f:
                                 # write data as output
                                 write_allocations = f.write(data)
+
+
 

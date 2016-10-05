@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Table, Column, Integer, String, Boolean
 
 
+engine = create_engine('sqlite:///amity.db', echo = False)
 
 Base = declarative_base()
 
@@ -13,7 +14,7 @@ Session.configure(bind=engine)
 session = Session()
 
 
-Class Room(Base):
+class Room(Base):
         __tablename__ = 'room'
 
         id = Column(Integer, primary_key=True)
@@ -23,7 +24,7 @@ Class Room(Base):
         occupant_no = Column(Integer)
 
 
-Class Person(Base):
+class Person(Base):
         __tablename__ = 'person'
 
         id = Column(Integer, primary_key=True)
@@ -34,6 +35,6 @@ Class Person(Base):
         livingspace_allocated = Column(String(20))
 
 
-engine = create_engine('sqlite:///amity.db', echo = False)
+
 
 Base.metadata.create_all(engine)
