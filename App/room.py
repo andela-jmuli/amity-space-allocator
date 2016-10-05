@@ -24,7 +24,6 @@ class Room(Amity):
                                 self.room_name = room
                                 # add new rooms to total rooms list
                                 self.total_rooms.append(room)
-
                 else:
                         for item in args:
                                 self.room_name = item
@@ -33,14 +32,15 @@ class Room(Amity):
 
 
         def print_room(self, room_name):
-                # first check whether room is existent
-                if room_name not in self.total_rooms:
-                        return "The room does not exist!"
-                # loop through rooms and identify
                 for rm in self.total_rooms:
+                        # first check whether room is existent
+                        if room_name not in self.total_rooms:
+                                return "The room does not exist!"
+
+                        # loop through rooms and identify
                         if rm == room_name:
                                 # check number of occupants
-                                if  rm.room_occupants > 1:
+                                if rm.room_occupants > 1:
                                         for p in rm.room_occupants:
                                                 print p
                                 else:
@@ -76,3 +76,4 @@ class Room(Amity):
                         with open('allocations.txt', 'w') as f:
                                 # write data as output
                                 write_allocations = f.write(data)
+
