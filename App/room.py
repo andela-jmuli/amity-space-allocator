@@ -98,7 +98,7 @@ class Room(Amity):
                                 data +=  "The room is currently empty"
                         return data
                 if '-o' in args:
-                        with open('allocations.txt', 'w') as f:
+                        with open('allocations', 'wb') as f:
                                 # write data as output
                                 write_allocations = f.write(data)
 
