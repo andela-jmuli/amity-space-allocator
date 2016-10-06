@@ -12,14 +12,13 @@ class Room(Amity):
         """ Room class subclasses Amity and is super to Office and LIvingSpace
                 Room also defines the common attributes between Office and LivingSpace
         """
-
+        total_rooms = {}
 
         def __init__(self):
                 super(Amity, self).__init__()
                 self.room_occupants = []
                 self.offices = []
                 self.livingspaces = []
-                self.total_rooms = []
                 self.total_people = []
 
 
@@ -36,28 +35,30 @@ class Room(Amity):
                         for room in new_rooms:
                                 self.room_name = room
                                 # add new rooms to total rooms list
-                                self.total_rooms.append(room)
+                                Room.total_rooms[room]=[]
                 else:
                         for item in args:
                                 self.room_name = item
                                 # add new room to total rooms list
-                                self.total_rooms.append(item)
+                                # self.total_rooms.append(item)
+                                Room.total_rooms[item]=[]
 
 
         def print_room(self, room_name):
                 """
                 This method prints out the name of all the people in the specified room
                 """
-                for rm in self.total_rooms:
-                        # first check whether room is existent
-                        if room_name not in self.total_rooms:
+                for rm in Room.total_rooms.keys():
+                        # first check whether room is existent as key of total_rooms dict.
+                        if room_name not in Room.total_rooms:
                                 return "The room does not exist!"
 
                         # loop through rooms and identify
                         if rm == room_name:
                                 # check number of occupants
-                                if rm.room_occupants > 1:
-                                        for p in rm.room_occupants:
+                                occupants =  Room.total_rooms.values()
+                                if occupants > 1:
+                                        for p in occupants:
                                                 print p
                                 else:
                                         print "The room is empty!"
@@ -69,7 +70,7 @@ class Room(Amity):
                 """
 
                 # first checks whether room exists in total_rooms list
-                if room_name not in self.total_rooms:
+                if room_name not in Room.total_rooms:
                         return "The room doesn't exist"
 
                 # appends room to office list if type defined == office
@@ -88,17 +89,18 @@ class Room(Amity):
                 """
 
                 # loop through all rooms
-                for room in self.total_rooms:
-                        data +=  '{0}'.format(room.room_name)
-                        if room.room_occupants:
-                                for person in room.room_occupants:
-                                        # save to output object
-                                        data +=  '{0}'.format(person.p_name)
-                        else:
-                                data +=  "The room is currently empty"
-                        return data
-                if '-o' in args:
-                        with open('allocations', 'wb') as f:
-                                # write data as output
-                                write_allocations = f.write(data)
+                # for room in self.total_rooms:
+                #         data +=  '{0}'.format(room.room_name)
+                #         occupants =  room.keys()
+                #         if occupants != []:
+                #                 for person in occupants:
+                #                         # save to output object
+                #                         data +=  '{0}'.format(person.p_name)
+                #         else:
+                #                 data =  "The room is currently empty"
+                #         return data
+                # if '-o' in args:
+                #         with open('allocations', 'wb') as f:
+                #                 # write data as output
+                #                 write_allocations = f.write(data)
 

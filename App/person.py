@@ -46,7 +46,7 @@ class Person(Amity):
                 # sanity check for empty list errors
                 if len(self.offices) > 1:
                     # allocate an office to the new fellow
-                    self.allocated_office = random.choice(self.offices)
+                    self.allocated_office = random.choice(Room.total_rooms.items())
                 else:
                     print "There are currently no offices"
 
