@@ -33,7 +33,8 @@ class TestPerson(unittest.TestCase):
 
 
         def test_printing_unallocated(self):
-                pass
+                self.person.print_unallocated('unallocated')
+                self.assertIsNotNone('unallocated')
 
 
 

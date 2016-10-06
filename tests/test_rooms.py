@@ -34,10 +34,13 @@ class TestRoom(unittest.TestCase):
         def test_it_prints_an_existing_room(self):
                 self.room.create_room('vanish')
                 self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
-                # self.room.print_room('vanish')
+                self.room.print_room('vanish')
                 self.assertIn('vanish', self.room.total_rooms)
 
 
-
         def test_it_prints_allocations(self):
+                pass
+
+
+        def test_room_is_fully_occupied(self):
                 pass
