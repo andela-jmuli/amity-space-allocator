@@ -5,4 +5,4 @@ checks:
 
 build:
     environment:
-        python: 2.7.12
+        python: 3.4.3
