@@ -39,8 +39,6 @@ class TestRoom(unittest.TestCase):
 
 
         def test_it_prints_allocations(self):
-                pass
+                self.room.print_allocations('unallocated')
+                self.assertIsNotNone('unallocated')
 
-
-        def test_room_is_fully_occupied(self):
-                pass
