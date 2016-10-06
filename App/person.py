@@ -2,6 +2,7 @@ from amity import Amity
 from room import Room
 
 import os
+import pickle
 import random
 
 class Person(Amity):
@@ -72,7 +73,6 @@ class Person(Amity):
             """
             prints out unallocated people to a specified file
             """
-
             # if file output option specified in arguments, write to file
             if '-o' in args:
                 with open(unallocated, 'wb') as f:

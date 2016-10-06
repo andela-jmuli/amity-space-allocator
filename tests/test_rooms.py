@@ -21,7 +21,7 @@ class TestRoom(unittest.TestCase):
 
         def test_create_room_input_string_type(self):
                 self.room.create_room('vanish')
-                self.assertEqual(type('vanish'), str, msg="Enter a String")
+                self.assertEqual(type('vanish'), str, msg="Room names should be Strings")
 
 
         def test_it_allocates_room_type(self):
