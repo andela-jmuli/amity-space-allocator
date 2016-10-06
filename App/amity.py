@@ -5,3 +5,7 @@ class Amity(object):
                 self.total_rooms = []
                 self.total_people = []
                 self.room_occupants = []
+                self.offices = []
+                self.livingspaces = []
+                self.allocated_office
+                self.allocated_livingspace
