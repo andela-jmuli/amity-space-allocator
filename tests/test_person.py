@@ -4,10 +4,12 @@ from App.person import Person
 from App.room import Room
 
 
+
 class TestPerson(unittest.TestCase):
 
         def setUp(self):
                 self.person = Person()
+                self.room = Room()
 
         def test_person_class_instance(self):
                 self.assertIsInstance(self.person, Person)
@@ -26,13 +28,8 @@ class TestPerson(unittest.TestCase):
 
         def test_loads_people(self):
                 test_file = self.person.load_people('list.txt')
-                # self.assertEqual(self.person.total_people, 5)
+                self.assertEqual(self.person.total_people, 5)
                 pass
-
-        def test_it_prints_an_existing_room(self):
-                self.room.create_room('vanish', 'galaxy')
-                self.room.print_room('galaxy')
-                self.assertIn('galaxy', self.room.total_rooms)
 
 
         def test_printing_unallocated(self):
