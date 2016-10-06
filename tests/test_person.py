@@ -22,8 +22,9 @@ class TestPerson(unittest.TestCase):
 
 
         def test_reallocation(self):
+                self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
                 self.person.reallocate_person(1, 'oculus')
-                pass
+                self.assertEqual(self.person.allocated_office, 'oculus')
 
 
         def test_loads_people(self):
