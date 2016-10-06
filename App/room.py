@@ -12,11 +12,6 @@ class Room(Amity):
         """ Room class subclasses Amity and is super to Office and LIvingSpace
                 Room also defines the common attributes between Office and LivingSpace
         """
-        engine = create_engine('sqlite:///amity.db', echo=False)
-
-        session = sessionmaker()
-        Session.configure(bind=engine)
-        session = Session()
 
 
         def __init__(self):
@@ -37,7 +32,7 @@ class Room(Amity):
                         new_rooms = []
                         for items in args:
                                 new_rooms.append(items)
-o
+
                         for room in new_rooms:
                                 self.room_name = room
                                 # add new rooms to total rooms list
@@ -106,6 +101,4 @@ o
                         with open('allocations.txt', 'w') as f:
                                 # write data as output
                                 write_allocations = f.write(data)
-
-
 
