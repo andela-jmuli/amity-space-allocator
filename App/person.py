@@ -20,6 +20,8 @@ class Person(Amity):
             self.livingspaces = []
             self.allocated_people = []
             self.unallocated_people = []
+            self.allocated_office = None
+            self.allocated_livingspace = None
 
 
 
