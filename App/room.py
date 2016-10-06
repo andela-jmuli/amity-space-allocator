@@ -12,11 +12,11 @@ class Room(Amity):
         """ Room class subclasses Amity and is super to Office and LIvingSpace
                 Room also defines the common attributes between Office and LivingSpace
         """
-        # engine = create_engine('sqlite://amity.db', echo=False)
+        engine = create_engine('sqlite:///amity.db', echo=False)
 
-        # session = sessionmaker()
-        # Session.configure(bind=engine)
-        # session = Session()
+        session = sessionmaker()
+        Session.configure(bind=engine)
+        session = Session()
 
 
         def __init__(self):
@@ -37,7 +37,7 @@ class Room(Amity):
                         new_rooms = []
                         for items in args:
                                 new_rooms.append(items)
-
+o
                         for room in new_rooms:
                                 self.room_name = room
                                 # add new rooms to total rooms list
@@ -50,6 +50,9 @@ class Room(Amity):
 
 
         def print_room(self, room_name):
+                """
+                This method prints out the name of all the people in the specified room
+                """
                 for rm in self.total_rooms:
                         # first check whether room is existent
                         if room_name not in self.total_rooms:
@@ -66,6 +69,10 @@ class Room(Amity):
 
 
         def allocate_room_type(self, room_name, room_type):
+                """
+                This method allocates a room as either an office or livingspace
+                """
+
                 # first checks whether room exists in total_rooms list
                 if room_name not in self.total_rooms:
                         return "The room doesn't exist"
@@ -80,6 +87,11 @@ class Room(Amity):
 
 
         def print_allocations(self, filename, *args):
+                """
+        Prints out a list of allocations -- room name and occupants -- an option to
+        write to a specified file if '-o' is included as an argument
+                """
+
                 # loop through all rooms
                 for room in self.total_rooms:
                         data +=  '{0}'.format(room.room_name)

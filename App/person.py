@@ -17,6 +17,9 @@ class Person(Amity):
 
 
         def add_person(self, first_name, last_name, job_type, wants_accomodation):
+            """
+            Adds a person to the system and allocates a random room
+            """
                 self.first_name = first_name
                 self.last_name = last_name
                 self.job_type = job_type
@@ -40,13 +43,22 @@ class Person(Amity):
 
 
         def reallocate_person(self, person_id, room_name):
+            """
+            Reallocates a person to a new room
+            """
                 pass
 
 
         def load_people(self, filename):
+            """
+            Adds people to rooms from a text file
+            """
                 pass
 
 
         def print_unallocated(self, filename):
+            """
+            prints out unallocated people to a specified file
+            """
                 pass
 
