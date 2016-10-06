@@ -7,4 +7,5 @@ class Amity(object):
                 self.room_occupants = []
                 self.offices = []
                 self.livingspaces = []
-
+                self.allocated_office = None
+                self.allocated_livingspace = None
