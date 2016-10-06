@@ -3,6 +3,7 @@ import os
 from App.room import Room
 from App.person import Person
 
+
 class TestRoom(unittest.TestCase):
 
         def setUp(self):
@@ -15,13 +16,18 @@ class TestRoom(unittest.TestCase):
 
 
         def test_it_creates_rooms(self):
+                total_before = len(self.room.total_rooms)
                 self.room.create_room('narnia', 'whimm', 'kelly')
-                self.assertEqual(len(self.room.total_rooms), 3)
+                total_after = len(self.room.total_rooms)
+                self.assertEqual((total_after - total_before) , 3)
 
 
         def test_create_room_input_string_type(self):
                 self.room.create_room('vanish')
-                self.assertEqual(type('vanish'), str, msg="Room names should be Strings")
+                self.assertEqual(type(self.room.room_name), str, msg="Room names should be Strings")
+
+                self.room.create_room(4)
+                self.assertEqual
 
 
         def test_it_allocates_room_type(self):
@@ -41,4 +47,5 @@ class TestRoom(unittest.TestCase):
         def test_it_prints_allocations(self):
                 self.room.print_allocations('unallocated')
                 self.assertIsNotNone('unallocated')
+
 
