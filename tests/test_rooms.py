@@ -41,7 +41,7 @@ class TestRoom(unittest.TestCase):
                 self.room.create_room('vanish')
                 self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
                 self.room.print_room('vanish')
-                self.assertIn('vanish', self.room.total_rooms)
+                self.assertIn('vanish', Room.total_rooms.keys())
 
 
         def test_it_prints_allocations(self):
