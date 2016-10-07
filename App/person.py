@@ -58,9 +58,8 @@ class Person(Amity):
                         if key == allocated_office:
                             Room.total_rooms[key].append(self.username)
 
-
                 else:
-                    print "There are currently no offices"
+                    return "There are currently no offices"
 
 
                 if wants_accomodation == 'Y':
@@ -76,7 +75,7 @@ class Person(Amity):
                                 Room.total_rooms[key].append(self.username)
 
                     else:
-                        print "There are currently no livingspaces"
+                        return "There are currently no livingspaces"
 
                 elif wants_accomodation == 'N':
                     self.unallocated_people.append(self.username)
@@ -120,7 +119,7 @@ class Person(Amity):
 
             if room_name in Room.offices:
 
-                for key in Room.total_rooms:
+                for key in Room.total_rooms.iteritems():
                     pass
 
 
@@ -129,3 +128,10 @@ class Person(Amity):
             Adds people to rooms from a text file
             """
             pass
+
+person = Person()
+room = Room()
+room.create_room('oculus')
+room.allocate_room_type('oculus', 'Office')
+person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
+# person.reallocate_person(1, 'oculus')

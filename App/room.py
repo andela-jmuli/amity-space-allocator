@@ -32,7 +32,7 @@ class Room(Amity):
 
                         for room in new_rooms:
                                 self.room_name = room
-                                # add new rooms to total rooms list
+                                # add new rooms to total rooms dictionary
                                 Room.total_rooms[room]= []
                 else:
                         for item in args:
@@ -79,7 +79,6 @@ class Room(Amity):
                 elif room_type == 'LivingSpace':
                         Room.livingspaces.append(room_name)
 
-
         def print_allocations(self, filename, *args):
                 """
         Prints out a list of allocations -- room name and occupants -- an option to
@@ -101,4 +100,3 @@ class Room(Amity):
                 #         with open('allocations', 'wb') as f:
                 #                 # write data as output
                 #                 write_allocations = f.write(data)
-
