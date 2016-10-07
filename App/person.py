@@ -1,6 +1,7 @@
 from amity import Amity
 from room import Room
 
+from collections import defaultdict
 from random import randint
 
 import os
@@ -14,11 +15,11 @@ class Person(Amity):
                 to both Fellow and Class
          """
         total_people = {}
-        # people_ids = len(total_people)
+        staff = []
+
         def __init__(self):
             super(Amity, self).__init__()
             self.fellows = []
-            self.staff = []
             self.allocated_people = []
             self.unallocated_people = []
             self.allocated_office = None
@@ -33,22 +34,30 @@ class Person(Amity):
             self.job_type = job_type
             self.wants_accomodation = wants_accomodation
 
-            p_name = first_name + last_name
+            self.username = first_name + last_name
             # add new person to the total people list with a new ID
 
             total_ids = len(Person.total_people)
             new_person_id = total_ids + 1
 
-            Person.total_people[new_person_id] = p_name
+            Person.total_people[new_person_id] = self.username
 
             # check the person's job type
             if job_type == 'Fellow':
-                self.fellows.append(p_name)
+                self.fellows.append(self.username)
 
                 # sanity check for empty list errors
                 if len(Room.offices) > 1:
                     # allocate an office to the new fellow
-                    self.allocated_office = random.choice(Room.total_rooms.items())
+                    allocated_office = random.choice(Room.total_rooms.items())
+
+                    # allocate the new person as an occupant of selected room
+                    Room.total_rooms = defaultdict(list)
+                    for key, occupant in Room.total_rooms:
+                        if key == allocated_office:
+                            Room.total_rooms[key].append(self.username)
+
+
                 else:
                     print "There are currently no offices"
 
@@ -57,17 +66,24 @@ class Person(Amity):
                     # sanity check for empty list
                     if len(Room.livingspaces) > 1:
                         # allocate a random livingspace
-                        self.allocated_livingspace = random.choice(self.livingspaces)
+                        allocated_livingspace = random.choice(Room.livingspaces)
+
+                        # allocate the new person as an occupant of the livingspace
+                        Room.total_rooms[allocated_livingspace].append(self.username)
+
                     else:
                         print "There are currently no livingspaces"
 
                 elif wants_accomodation == 'N':
-                    self.unallocated_people.append(p_name)
+                    self.unallocated_people.append(self.username)
 
 
             elif job_type == 'Staff':
-                self.staff.append(p_name)
-                self.allocated_office = random.choice(self.offices)
+
+                Person.staff.append(self.username)
+                allocated_office = random.choice(Room.offices)
+
+                Room.total_rooms[allocated_office].append(self.username)
 
                 if wants_accomodation == 'Y':
                     return "Staff members are not allocated livingspaces"
@@ -89,7 +105,17 @@ class Person(Amity):
             """
             Reallocates a person to a new room
             """
-            pass
+            if person_id not in Person.total_people.keys():
+                return "The person ID does not exist!"
+
+            if room_name not in Room.total_rooms.keys():
+                return "The room either desn't exist or is not allocated!"
+
+            if room_name in Room.offices:
+
+                for key in Room.total_rooms:
+                    pass
+                    # if person_id in Room.total_rooms[key]
 
         def load_people(self, filename):
             """
