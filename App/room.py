@@ -18,8 +18,6 @@ class Room(Amity):
 
         def __init__(self):
                 super(Amity, self).__init__()
-                self.room_occupants = []
-                self.total_people = []
 
 
         def create_room(self, *args):
@@ -35,7 +33,7 @@ class Room(Amity):
                         for room in new_rooms:
                                 self.room_name = room
                                 # add new rooms to total rooms list
-                                Room.total_rooms[room]=[]
+                                Room.total_rooms[room]= []
                 else:
                         for item in args:
                                 self.room_name = item
@@ -95,7 +93,7 @@ class Room(Amity):
                 #         if occupants != []:
                 #                 for person in occupants:
                 #                         # save to output object
-                #                         data +=  '{0}'.format(person.p_name)
+                #                         data +=  '{0}'.format(person.username)
                 #         else:
                 #                 data =  "The room is currently empty"
                 #         return data
