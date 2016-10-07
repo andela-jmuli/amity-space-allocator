@@ -54,6 +54,7 @@ class Person(Amity):
                     # allocate the new person as an occupant of selected room
                     Room.total_rooms = defaultdict(list)
                     for key, occupant in Room.total_rooms:
+
                         if key == allocated_office:
                             Room.total_rooms[key].append(self.username)
 
@@ -69,7 +70,10 @@ class Person(Amity):
                         allocated_livingspace = random.choice(Room.livingspaces)
 
                         # allocate the new person as an occupant of the livingspace
-                        Room.total_rooms[allocated_livingspace].append(self.username)
+                        Room.total_rooms = defaultdict(list)
+                        for key, occupant in Room.total_rooms:
+                            if key == allocated_livingspace:
+                                Room.total_rooms[key].append(self.username)
 
                     else:
                         print "There are currently no livingspaces"
@@ -83,7 +87,10 @@ class Person(Amity):
                 Person.staff.append(self.username)
                 allocated_office = random.choice(Room.offices)
 
-                Room.total_rooms[allocated_office].append(self.username)
+                Room.total_rooms = defaultdict(list)
+                for key, occupant in Room.total_rooms:
+                    if key == allocated_office:
+                        Room.total_rooms[key].append(self.username)
 
                 if wants_accomodation == 'Y':
                     return "Staff members are not allocated livingspaces"
@@ -115,7 +122,7 @@ class Person(Amity):
 
                 for key in Room.total_rooms:
                     pass
-                    # if person_id in Room.total_rooms[key]
+
 
         def load_people(self, filename):
             """
