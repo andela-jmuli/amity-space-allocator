@@ -1,29 +1,28 @@
 from amity import Amity
 from room import Room
 
+from random import randint
+
 import os
 import pickle
 import random
+
 
 class Person(Amity):
         """ Person subclasses Amity and is super to Fellow and Staff
                 Person defines the main attributes and methods common
                 to both Fellow and Class
          """
+        total_people = {}
+        # people_ids = len(total_people)
         def __init__(self):
             super(Amity, self).__init__()
-            self.total_people = []
-            self.total_rooms = []
             self.fellows = []
             self.staff = []
-            self.offices = []
-            self.livingspaces = []
             self.allocated_people = []
             self.unallocated_people = []
             self.allocated_office = None
             self.allocated_livingspace = None
-
-
 
         def add_person(self, first_name, last_name, job_type, wants_accomodation):
             """
@@ -35,16 +34,19 @@ class Person(Amity):
             self.wants_accomodation = wants_accomodation
 
             p_name = first_name + last_name
-            # add new person to the total people list
-            self.total_people.append(p_name)
+            # add new person to the total people list with a new ID
 
+            total_ids = len(Person.total_people)
+            new_person_id = total_ids + 1
+
+            Person.total_people[new_person_id] = p_name
 
             # check the person's job type
             if job_type == 'Fellow':
                 self.fellows.append(p_name)
 
                 # sanity check for empty list errors
-                if len(self.offices) > 1:
+                if len(Room.offices) > 1:
                     # allocate an office to the new fellow
                     self.allocated_office = random.choice(Room.total_rooms.items())
                 else:
@@ -53,7 +55,7 @@ class Person(Amity):
 
                 if wants_accomodation == 'Y':
                     # sanity check for empty list
-                    if len(self.livingspaces) > 1:
+                    if len(Room.livingspaces) > 1:
                         # allocate a random livingspace
                         self.allocated_livingspace = random.choice(self.livingspaces)
                     else:
@@ -70,7 +72,6 @@ class Person(Amity):
                 if wants_accomodation == 'Y':
                     return "Staff members are not allocated livingspaces"
 
-
         def print_unallocated(self, filename, *args):
             """
             prints out unallocated people to a specified file
@@ -84,17 +85,14 @@ class Person(Amity):
                 for person in self.unallocated_people:
                     print person
 
-
         def reallocate_person(self, person_id, room_name):
             """
             Reallocates a person to a new room
             """
             pass
 
-
         def load_people(self, filename):
             """
             Adds people to rooms from a text file
             """
             pass
-
