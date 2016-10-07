@@ -13,12 +13,12 @@ class Room(Amity):
                 Room also defines the common attributes between Office and LivingSpace
         """
         total_rooms = {}
+        offices = []
+        livingspaces = []
 
         def __init__(self):
                 super(Amity, self).__init__()
                 self.room_occupants = []
-                self.offices = []
-                self.livingspaces = []
                 self.total_people = []
 
 
@@ -75,11 +75,11 @@ class Room(Amity):
 
                 # appends room to office list if type defined == office
                 if room_type == 'Office':
-                        self.offices.append(room_name)
+                        Room.offices.append(room_name)
 
                 # appends room to livingspace if type defined == livingspace
                 elif room_type == 'LivingSpace':
-                        self.livingspaces.append(room_name)
+                        Room.livingspaces.append(room_name)
 
 
         def print_allocations(self, filename, *args):
