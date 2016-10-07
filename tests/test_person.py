@@ -14,26 +14,21 @@ class TestPerson(unittest.TestCase):
         def test_person_class_instance(self):
                 self.assertIsInstance(self.person, Person)
 
-
         def test_it_adds_a_person(self):
                 self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
                 self.person.add_person('Michael', 'Kamau', 'Fellow', 'Y')
                 self.assertEqual(len(self.person.total_people), 2)
 
-
         def test_reallocation(self):
                 self.room.create_room('oculus')
                 self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
-                # self.person.reallocate_person(1, 'oculus')
-                # self.assertEqual(self.person.allocated_office, 'oculus')
+                self.person.reallocate_person(1, 'oculus')
                 self.assertIn(self.person.username, Room.total_rooms['oculus'])
-
 
         def test_loads_people(self):
                 test_file = self.person.load_people('list.txt')
-                self.assertEqual(self.person.total_people, 5)
+                self.assertEqual(len(self.person.total_people), 5)
                 pass
-
 
         def test_printing_unallocated(self):
                 self.person.print_unallocated('unallocated')
