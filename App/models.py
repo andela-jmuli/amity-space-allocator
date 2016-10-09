@@ -33,6 +33,7 @@ class Person(Base):
         accomodated = Column(Boolean, default=False)
         office_allocated = Column(String(20))
         livingspace_allocated = Column(String(20))
+        job_type = Column(String(20))
 
 
 
