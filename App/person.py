@@ -166,4 +166,31 @@ class Person(Amity):
             """
             Adds people to rooms from a text file
             """
-            pass
+            # check whether the file specified exists
+            if os.path.exists(filename):
+                with open(filename) as input:
+
+                    # file data is added to content as a list where each line is an element
+                    content = input.readlines()
+
+                    # if file is empty return message
+                    if len(content) == 0:
+                        return "The file is empty"
+                    else:
+                        for line in content:
+                            person_data = line.split()
+                            first_name = person_data[0]
+                            last_name = person_data[1]
+                            job_type = person_data[2]
+                            try:
+                                accomodation = person_data[3]
+                            except:
+                                # by default if not specified
+                                wants_accommodation = 'N'
+                            person = Person()
+                            person.add_person(first_name, last_name, job_type, accomodation)
+
+                        return "File data added successfully"
+            else:
+                return "The file doesn't exist"
+

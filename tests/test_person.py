@@ -32,8 +32,8 @@ class TestPerson(unittest.TestCase):
 
         def test_loads_people(self):
                 test_file = self.person.load_people('list.txt')
-                self.assertEqual(len(self.person.total_people), 5)
-                pass
+                print self.person.total_people
+                self.assertTrue(len(self.person.total_people) > 5)
 
         def test_printing_unallocated(self):
                 self.person.print_unallocated('unallocated')

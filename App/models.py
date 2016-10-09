@@ -28,6 +28,7 @@ class Person(Base):
         __tablename__ = 'person'
 
         id = Column(Integer, primary_key=True)
+        person_id = Column(Integer)
         first_name = Column(String(50))
         last_name = Column(String(50))
         accomodated = Column(Boolean, default=False)
