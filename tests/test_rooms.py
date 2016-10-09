@@ -28,7 +28,7 @@ class TestRoom(unittest.TestCase):
                 self.room.create_room('vanish', 'galaxy')
                 self.room.allocate_room_type('vanish', 'Office')
                 self.room.allocate_room_type('galaxy', 'Office')
-                self.assertEqual(len(self.room.offices), 2)
+                self.assertIn('galaxy', self.room.offices)
 
         def test_it_prints_an_existing_room(self):
                 self.room.create_room('vanish')

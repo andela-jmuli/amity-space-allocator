@@ -15,15 +15,20 @@ class TestPerson(unittest.TestCase):
                 self.assertIsInstance(self.person, Person)
 
         def test_it_adds_a_person(self):
+                total_before = len(self.person.total_people)
+                self.room.create_room('oculus')
+                self.room.allocate_room_type('oculus', 'Office')
                 self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
                 self.person.add_person('Michael', 'Kamau', 'Fellow', 'Y')
-                self.assertEqual(len(self.person.total_people), 2)
+                total_after = len(self.person.total_people)
+                print self.person.total_people
+                self.assertEqual((total_after - total_before), 2)
 
         def test_reallocation(self):
-                self.room.create_room('oculus')
-                self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
-                self.person.reallocate_person(1, 'oculus')
-                self.assertIn(self.person.username, Room.total_rooms['oculus'])
+                self.room.create_room('mordor')
+                self.room.allocate_room_type('mordor', 'Office')
+                self.person.reallocate_person(1, 'mordor')
+                self.assertIn(1, self.room.total_rooms['mordor'])
 
         def test_loads_people(self):
                 test_file = self.person.load_people('list.txt')
