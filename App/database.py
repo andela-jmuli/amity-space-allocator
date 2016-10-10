@@ -44,3 +44,41 @@ class AmityDatabase(object):
                 except Exception:
                         return "room data save Failed!"
 
+        def commit_people(self, amity_session):
+                # loop through people dictionary and get person details
+                for key, value in Person.total_people.items():
+                        person_id = key
+                        username = value["username"]
+                for job in Person.fellows:
+                        if username in Person.fellows:
+                                job_type = 'fellow'
+                        else:
+                                job_type = 'staff'
+                if username in Person.unallocated_people:
+                        is_accomodated = 'False'
+                        allocated_livingspace = None
+                        for room in Room.total_rooms:
+                                if room in Room.offices:
+                                        for occupant in Room.total_rooms[room]:
+                                                if person_id == occupant:
+                                                        allocated_office = room
+                else:
+                        is_accomodated = 'True'
+                        for room in Room.total_rooms:
+                                if room in Room.offices:
+                                        for occupant in Room.total_rooms[room]:
+                                                if person_id == occupant:
+                                                        allocated_office = room
+                                elif room in Room.livingspaces:
+                                        for occupant in Room.total_rooms[room]:
+                                                if person_id == occupant:
+                                                        allocated_livingspace = room
+
+                person_info = (person_id=person_id, username=username, is_accomodated=is_accomodated, office_allocated=allocated_office, livingspace_allocated=allocated_livingspace, job_type=job_type)
+                try:
+                        amity_session.add(person_info)
+                except Exception:
+                        return "person data save not successful"
+
+
+
