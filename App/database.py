@@ -2,7 +2,9 @@ import os
 
 from room import Room
 from person import Person
-from sqlalchemy import create_engine, Metadata
+from models import AmityRoom
+from models import AmityPerson
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
@@ -37,10 +39,10 @@ class AmityDatabase(object):
                         elif rm in Room.livingspaces:
                                 room_type = 'livingspace'
                                 room_capacity = 4
-                room_info = (room_name=room_name, room_type=room_type, capacity=room_capacity)
+                amity_room = AmityRoom(room_name=room_name, room_type=room_type, capacity=room_capacity)
 
                 try:
-                        amity_session.add(room_info)
+                        amity_session.add(amity_room)
                 except Exception:
                         return "room data save Failed!"
 
@@ -74,7 +76,7 @@ class AmityDatabase(object):
                                                 if person_id == occupant:
                                                         allocated_livingspace = room
 
-                person_info = (person_id=person_id, username=username, is_accomodated=is_accomodated, office_allocated=allocated_office, livingspace_allocated=allocated_livingspace, job_type=job_type)
+                person_info = AmityPerson(person_id=person_id, username=username, is_accomodated=is_accomodated, office_allocated=allocated_office, livingspace_allocated=allocated_livingspace, job_type=job_type)
                 try:
                         amity_session.add(person_info)
                 except Exception:
@@ -82,11 +84,11 @@ class AmityDatabase(object):
 
 
 
-        def save_state(self, db_name='amity.db'):
+        def save_state(self, db_name):
                 if os.path.exists(db_name):
                         os.remove(db_name)
                 try:
-                        save_amity_session = self.connect_db(amity.db)
+                        save_amity_session = self.connect_db(db_name)
                         self.commit_people(save_amity_session)
                         self.commit_rooms(save_amity_session)
                 except Exception:
