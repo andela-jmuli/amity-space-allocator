@@ -36,8 +36,8 @@ class TestRoom(unittest.TestCase):
                 self.assertIn('vanish', Room.total_rooms.keys())
 
         def test_it_prints_allocations(self):
-                self.room.print_allocations('unallocated')
-                # self.assertIsNotNone('unallocated')
+                self.room.print_allocations('list.txt')
+                self.assertIsNotNone('list.txt')
                 pass
 
 

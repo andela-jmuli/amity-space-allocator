@@ -16,12 +16,12 @@ class Person(Amity):
          """
         total_people = {}
         staff = []
+        unallocated_people = []
+        allocated_people = []
+        fellows = []
 
         def __init__(self):
             super(Amity, self).__init__()
-            self.fellows = []
-            self.allocated_people = []
-            self.unallocated_people = []
             self.allocated_office = None
             self.allocated_livingspace = None
 
@@ -45,7 +45,7 @@ class Person(Amity):
 
             # check the person's job type
             if job_type == 'Fellow':
-                self.fellows.append(self.username)
+                Person.fellows.append(self.username)
 
                 # sanity check for empty list errors
                 if len(Room.offices) > 0:
@@ -60,7 +60,7 @@ class Person(Amity):
                                 return "The office is currently fully occupied"
                             else:
                                 Room.total_rooms[key].append(self.person_id)
-                                print Room.total_rooms[key]
+                                # print Room.total_rooms[key]
 
                 else:
                     return "There are currently no offices"
@@ -85,7 +85,7 @@ class Person(Amity):
                         return "There are currently no livingspaces"
 
                 elif wants_accomodation == 'N':
-                    self.unallocated_people.append(self.username)
+                    Person.unallocated_people.append(self.username)
 
 
             elif job_type == 'Staff':
@@ -108,10 +108,10 @@ class Person(Amity):
             # if file output option specified in arguments, write to file
             if '-o' in args:
                 with open(unallocated, 'wb') as f:
-                    pickle.dump(self.unallocated_people, f)
+                    pickle.dump(Person.unallocated_people, f)
             # if file output option not specified, write to screen(console)
             else:
-                for person in self.unallocated_people:
+                for person in Person.unallocated_people:
                     print person
 
         def reallocate_person(self, person_id, room_name):
