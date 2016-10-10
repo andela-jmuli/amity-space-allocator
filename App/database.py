@@ -82,3 +82,15 @@ class AmityDatabase(object):
 
 
 
+        def save_state(self, db_name='amity.db'):
+                if os.path.exists(db_name):
+                        os.remove(db_name)
+                try:
+                        save_amity_session = self.connect_db(amity.db)
+                        self.commit_people(save_amity_session)
+                        self.commit_rooms(save_amity_session)
+                except Exception:
+                        message = "Error saving data to database"
+
+                save_amity_session.commit()
+                save_amity_session.close()
