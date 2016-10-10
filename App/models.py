@@ -21,7 +21,6 @@ class Room(Base):
         room_name = Column(String(20))
         room_type = Column(String(20))
         capacity = Column(Integer)
-        occupant_no = Column(Integer)
 
 
 class Person(Base):
@@ -29,9 +28,8 @@ class Person(Base):
 
         id = Column(Integer, primary_key=True)
         person_id = Column(Integer)
-        first_name = Column(String(50))
-        last_name = Column(String(50))
-        accomodated = Column(Boolean, default=False)
+        username = Column(String(50))
+        is_accomodated = Column(Boolean, default=False)
         office_allocated = Column(String(20))
         livingspace_allocated = Column(String(20))
         job_type = Column(String(20))
