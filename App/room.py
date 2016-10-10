@@ -51,12 +51,16 @@ class Room(Amity):
                         # loop through rooms and identify
                         if rm == room_name:
                                 # check number of occupants
-                                occupants =  Room.total_rooms.values()
-                                if occupants > 1:
-                                        for p in occupants:
-                                                print p
+                                if len(Room.total_rooms[rm]) < 1:
+                                        print '------------------------------------------------------------------------'
+                                        return "There are currently no occupants in {0}".format(rm)
                                 else:
-                                        print "The room is empty!"
+                                        for occupant, person_id in zip(Room.total_rooms[rm], person.Person.total_people.keys()):
+                                                if occupant == person_id:
+                                                        person_name = person.Person.total_people[person_id]
+                                                        print '--------------------------------------'
+                                                        print person_name
+
 
         def allocate_room_type(self, room_name, room_type):
                 """
@@ -93,6 +97,7 @@ class Room(Amity):
                                 if occupant == person_id:
                                         person_name = person.Person.total_people[person_id]
                                         print person_name
+                                        print '--------------------------------------'
 
                 if '-o' in args:
                         with open('allocations', 'wb') as f:
