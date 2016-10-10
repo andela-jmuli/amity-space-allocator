@@ -60,7 +60,7 @@ class Person(Amity):
                                 return "The office is currently fully occupied"
                             else:
                                 Room.total_rooms[key].append(self.person_id)
-                                print Room.total_rooms[key]
+                                # print Room.total_rooms[key]
 
                 else:
                     return "There are currently no offices"

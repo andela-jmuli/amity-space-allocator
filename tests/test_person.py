@@ -31,8 +31,7 @@ class TestPerson(unittest.TestCase):
                 self.assertIn(1, self.room.total_rooms['mordor'])
 
         def test_loads_people(self):
-                test_file = self.person.load_people('list.txt')
-                print self.person.total_people
+                self.person.load_people('list.txt')
                 self.assertTrue(len(self.person.total_people) > 5)
 
         def test_printing_unallocated(self):
