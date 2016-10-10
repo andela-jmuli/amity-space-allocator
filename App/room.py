@@ -38,12 +38,6 @@ class Room(Amity):
                                 Room.total_rooms[room]= []
                 elif len(args) < 1:
                         return "You can't create an empty room!"
-                        # for item in args:
-                        #         self.room_name = item
-                        #         # add new room to total rooms list
-                        #         # self.total_rooms.append(item)
-                        #         Room.total_rooms[item]=[]
-
 
         def print_room(self, room_name):
                 """
@@ -63,7 +57,6 @@ class Room(Amity):
                                                 print p
                                 else:
                                         print "The room is empty!"
-
 
         def allocate_room_type(self, room_name, room_type):
                 """
@@ -94,7 +87,7 @@ class Room(Amity):
                 for room in Room.total_rooms.keys():
                         room_name = '{0}'.format(room)
                         print room_name
-                        #print '---------------------------------------------------'
+
                         print '----------- {0} Occupants--------------'.format(room_name)
                         for occupant, person_id in zip(Room.total_rooms[room], person.Person.total_people.keys()):
                                 if occupant == person_id:
