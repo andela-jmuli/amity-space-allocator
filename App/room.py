@@ -9,6 +9,10 @@ from amity import Amity
 import person
 import database
 
+engine = create_engine('sqlite:///amity.db', echo = False)
+Session = sessionmaker()
+Session.configure(bind=engine)
+session = Session()
 
 class Room(Amity):
         """ Room class subclasses Amity and is super to Office and LIvingSpace
@@ -17,6 +21,8 @@ class Room(Amity):
         total_rooms = {}
         offices = []
         livingspaces = []
+
+
 
         def __init__(self, offices=offices, total_rooms=total_rooms):
                 super(Amity, self).__init__()
@@ -44,6 +50,7 @@ class Room(Amity):
                 """
                 This method prints out the name of all the people in the specified room
                 """
+
                 for rm in Room.total_rooms.keys():
                         # first check whether room is existent as key of total_rooms dict.
                         if room_name not in Room.total_rooms:
@@ -53,15 +60,14 @@ class Room(Amity):
                         if rm == room_name:
                                 # check number of occupants
                                 if len(Room.total_rooms[rm]) < 1:
-                                        print '------------------------------------------------------------------------'
+                                        # print '------------------------------------------------------------------------'
                                         return "There are currently no occupants in {0}".format(rm)
                                 else:
-                                        for occupant, person_id in zip(Room.total_rooms[rm], person.Person.total_people.keys()):
+                                        for occupant, person_id in zip(Room.total_rooms[rm], Person.total_people.keys()):
                                                 if occupant == person_id:
-                                                        person_name = person.Person.total_people[person_id]
-                                                        print '--------------------------------------'
+                                                        person_name = Person.total_people[person_id]
+                                                        # print '--------------------------------------'
                                                         print person_name
-
 
         def allocate_room_type(self, room_name, room_type):
                 """
@@ -109,28 +115,33 @@ class Room(Amity):
                                 # write data as output
                                 write_allocations = f.write(data)
 
-        def commit_rooms(self):
+        @staticmethod
+        def commit_rooms(db_name):
                 """
         Loads rooms from the total_rooms dictionary and commits to database
                 """
                 # loop through all rooms dictionary and get room names which are the keys
+                global engine
+                engine = create_engine('sqlite:///'+db_name, echo = False)
+                Session = sessionmaker()
+                Session.configure(bind=engine)
+                session = Session()
                 for room in Room.total_rooms.keys():
-                        room_name = room
-                #  check for room type and capacity
-                        if room in Room.offices:
-                                room_type = 'office'
-                                room_capacity = 6
-                        elif room in Room.livingspaces:
-                                room_type = 'livingspace'
-                                room_capacity = 4
-                                # add changes as an object if the model class
-                                amity_room = AmityRoom(room_name=room_name, room_type=room_type, capacity=room_capacity)
+                    room_name = room
+                    #  check for room type and capacity
+                    if room in Room.offices:
+                        room_type = 'office'
+                        room_capacity = 6
+                    elif room in Room.livingspaces:
+                        room_type = 'livingspace'
+                        room_capacity = 4
+                    amity_room = AmityRoom(room_name=room_name, room_type=room_type, capacity=room_capacity)
 
-                                try:
+                    try:
+                        session.add(amity_room)
+                        session.commit()
+                    except Exception:
+                            return "room data save Failed!"
 
-                                        database.session.add(amity_room)
-                                except Exception:
-                                        return "room data save Failed!"
 
-        def commit_allocations(self):
-                pass
+

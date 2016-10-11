@@ -4,14 +4,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Table, Column, Integer, String, Boolean
 
-
-engine = create_engine('sqlite:///amity.db', echo = False)
+# engine = create_engine('sqlite:///amity.db', echo = False)
 
 Base = declarative_base()
 
-Session = sessionmaker()
-Session.configure(bind=engine)
-session = Session()
 
 
 class AmityRoom(Base):
@@ -31,16 +27,13 @@ class AmityPerson(Base):
         username = Column(String(50))
         job_type = Column(String(20))
         is_accomodated = Column(Boolean, default=False)
+        allocated_office = Column(String(20))
+        allocated_livingspace = Column(String(20))
 
 
-class AmityAllocations(Base):
-        __tablename__ = 'allocations'
-
-        id = Column(Integer, primary_key=True)
-        room_name = Column(String(20))
-        occupants = Column(String(20))
+def create_db(db_name):
+        engine = create_engine('sqlite:///'+db_name, echo=True)
+        global Base
+        Base.metadata.create_all(engine)
 
 
-
-
-Base.metadata.create_all(engine)
