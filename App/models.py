@@ -14,7 +14,7 @@ Session.configure(bind=engine)
 session = Session()
 
 
-class Room(Base):
+class AmityRoom(Base):
         __tablename__ = 'room'
 
         id = Column(Integer, primary_key=True)
@@ -23,16 +23,22 @@ class Room(Base):
         capacity = Column(Integer)
 
 
-class Person(Base):
+class AmityPerson(Base):
         __tablename__ = 'person'
 
         id = Column(Integer, primary_key=True)
         person_id = Column(Integer)
         username = Column(String(50))
-        is_accomodated = Column(Boolean, default=False)
-        office_allocated = Column(String(20))
-        livingspace_allocated = Column(String(20))
         job_type = Column(String(20))
+        is_accomodated = Column(Boolean, default=False)
+
+
+class AmityAllocations(Base):
+        __tablename__ = 'allocations'
+
+        id = Column(Integer, primary_key=True)
+        room_name = Column(String(20))
+        occupants = Column(String(20))
 
 
 
