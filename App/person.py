@@ -37,7 +37,7 @@ class Person(Amity):
             self.last_name = last_name
             self.job_type = job_type
             self.wants_accomodation = wants_accomodation
-
+            room = Room()
             self.username = first_name + last_name
             # add new person to the total people list with a new ID
 
@@ -57,14 +57,14 @@ class Person(Amity):
                     allocated_office = random.choice(Room.offices)
                     # allocate the new person as an occupant of selected room
                     # Room.total_rooms = defaultdict(list)
-                    for key in Room.total_rooms.keys():
+                    for key in room.total_rooms.keys():
 
                         if key == allocated_office:
-                            if len(Room.total_rooms[key]) == 6:
+                            if len(room.total_rooms[key]) == 6:
                                 return "The office is currently fully occupied"
                             else:
-                                Room.total_rooms[key].append(self.person_id)
-                                # print Room.total_rooms[key]
+                                room.total_rooms[key].append(self.person_id)
+
 
                 else:
                     return "There are currently no offices"
@@ -78,12 +78,12 @@ class Person(Amity):
 
                         # allocate the new person as an occupant of the livingspace
                         Room.total_rooms = defaultdict(list)
-                        for key in Room.total_rooms.keys():
+                        for key in room.total_rooms.keys():
                             if key == allocated_livingspace:
-                                if len(Room.total_rooms[key]) == 4:
+                                if len(room.total_rooms[key]) == 4:
                                     return "The livingspace is curently fully occupied"
                                 else:
-                                    Room.total_rooms[key].append(self.person_id)
+                                    room.total_rooms[key].append(self.person_id)
 
                     else:
                         return "There are currently no livingspaces"
@@ -97,10 +97,10 @@ class Person(Amity):
                 Person.staff.append(self.username)
                 allocated_office = random.choice(Room.offices)
 
-                Room.total_rooms = defaultdict(list)
-                for key, occupant in Room.total_rooms:
+                room.total_rooms = defaultdict(list)
+                for key, occupant in room.total_rooms:
                     if key == allocated_office:
-                        Room.total_rooms[key].append(self.person_id)
+                        room.total_rooms[key].append(self.person_id)
 
                 if wants_accomodation == 'Y':
                     return "Staff members are not allocated livingspaces"
@@ -198,24 +198,57 @@ class Person(Amity):
             else:
                 return "The file doesn't exist"
 
-        def commit_people(self):
+        @staticmethod
+        def commit_people(session):
+                # initialize session
+                # session = database.AmityDatabase.session
                 # loop through people dictionary and get person details
-                for key, value in Person.total_people.items():
+                room = Room()
+                for key in Person.total_people.items():
                         person_id = key
-                        username = value["username"]
+                        username = Person.total_people[key]
                         if username in Person.fellows:
                             job_type = 'fellow'
                         else:
                                 job_type = 'staff'
+                        # check whether the person is unallocated
                         if username in Person.unallocated_people:
                             is_accomodated = 'False'
+                            allocated_livingspace = None
+                            # get allocated_office
+                            for room in room.total_rooms:
+                                if room in Room.offices:
+                                    for occupant in room.total_rooms[room]:
+                                        if person_id == occupant:
+                                            allocated_office = room
+
+                                            person_info = AmityPerson(person_id=person_id, username=username, job_type=job_type, is_accomodated=is_accomodated)
+                                            try:
+                                                session.add(person_info)
+                                            except Exception:
+                                                return "person data save not successful"
 
                         else:
+                            # if the person is not in the unallocated people list, is_accomodated is set to True
                             is_accomodated = 'True'
+                            # get allocated livingspace
+                            for room in room.total_rooms:
+                                if room in Room.livingspaces:
+                                    for occupant in room.total_rooms[room]:
+                                        if person_id == occupant:
+                                            allocated_livingspace = room
+                                            # get person's allocated office based on person ID
+                                            for room in room.total_rooms:
+                                                if room in Room.offices:
+                                                    for occupant in room.total_rooms[room]:
+                                                        if person_id == occupant:
+                                                            allocated_office = room
 
-                        person_info = AmityPerson(person_id=person_id, username=username, job_type=job_type, is_accomodated=is_accomodated)
-                        try:
-                            database.session.add(person_info)
-                        except Exception:
-                            return "person data save not successful"
+                                                            # save data as an object of Model Table class AmityPerson
+                                                            person_info = AmityPerson(person_id=person_id, username=username, job_type=job_type, is_accomodated=is_accomodated)
+                                                            # Add person data to session
+                                                            try:
+                                                                session.add(person_info)
+                                                            except Exception:
+                                                                return "person data save not successful"
 
