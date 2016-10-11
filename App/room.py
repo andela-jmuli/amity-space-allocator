@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from amity import Amity
 import person
+import database
 
 
 class Room(Amity):
@@ -108,25 +109,28 @@ class Room(Amity):
                                 # write data as output
                                 write_allocations = f.write(data)
 
-        def commit_rooms(self, amity_session):
+        def commit_rooms(self):
                 """
         Loads rooms from the total_rooms dictionary and commits to database
                 """
+                # loop through all rooms dictionary and get room names which are the keys
                 for room in Room.total_rooms.keys():
                         room_name = room
-                for rm in Room.offices:
-                        if rm in Room.offices:
+                #  check for room type and capacity
+                        if room in Room.offices:
                                 room_type = 'office'
                                 room_capacity = 6
-                        elif rm in Room.livingspaces:
+                        elif room in Room.livingspaces:
                                 room_type = 'livingspace'
                                 room_capacity = 4
-                amity_room = AmityRoom(room_name=room_name, room_type=room_type, capacity=room_capacity)
+                                # add changes as an object if the model class
+                                amity_room = AmityRoom(room_name=room_name, room_type=room_type, capacity=room_capacity)
 
-                try:
-                        amity_session.add(amity_room)
-                except Exception:
-                        return "room data save Failed!"
+                                try:
+
+                                        database.session.add(amity_room)
+                                except Exception:
+                                        return "room data save Failed!"
 
         def commit_allocations(self):
                 pass
