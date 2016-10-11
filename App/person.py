@@ -1,6 +1,6 @@
 from amity import Amity
 from room import Room
-
+from models import AmityPerson
 from collections import defaultdict
 from random import randint
 
@@ -101,7 +101,7 @@ class Person(Amity):
                 if wants_accomodation == 'Y':
                     return "Staff members are not allocated livingspaces"
 
-        def print_unallocated(self, filename, *args):
+        def print_unallocated(self, *args):
             """
             prints out unallocated people to a specified file
             """
@@ -193,4 +193,26 @@ class Person(Amity):
                         return "File data added successfully"
             else:
                 return "The file doesn't exist"
+
+        def commit_people(self, amity_session):
+                # loop through people dictionary and get person details
+                for key, value in Person.total_people.items():
+                        person_id = key
+                        username = value["username"]
+                for job in Person.fellows:
+                        if username in Person.fellows:
+                                job_type = 'fellow'
+                        else:
+                                job_type = 'staff'
+                if username in Person.unallocated_people:
+                        is_accomodated = 'False'
+
+                else:
+                        is_accomodated = 'True'
+
+                person_info = AmityPerson(person_id=person_id, username=username, job_type=job_type, is_accomodated=is_accomodated)
+                try:
+                        amity_session.add(person_info)
+                except Exception:
+                        return "person data save not successful"
 

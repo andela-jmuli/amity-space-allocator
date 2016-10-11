@@ -1,5 +1,5 @@
 import os
-from models import Room
+from models import AmityRoom
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -93,13 +93,40 @@ class Room(Amity):
                         print room_name
 
                         print '----------- {0} Occupants--------------'.format(room_name)
-                        for occupant, person_id in zip(Room.total_rooms[room], person.Person.total_people.keys()):
-                                if occupant == person_id:
-                                        person_name = person.Person.total_people[person_id]
-                                        print person_name
-                                        print '--------------------------------------'
+                        if len(Room.total_rooms[room]) < 1:
+                                print '------------------------------------------------------------------------'
+                                return "There are currently no occupants in {0}".format(room)
+                        else:
+                                for occupant, person_id in zip(Room.total_rooms[room], person.Person.total_people.keys()):
+                                        if occupant == person_id:
+                                                person_name = person.Person.total_people[person_id]
+                                                print person_name
+                                                print '--------------------------------------'
 
                 if '-o' in args:
                         with open('allocations', 'wb') as f:
                                 # write data as output
                                 write_allocations = f.write(data)
+
+        def commit_rooms(self, amity_session):
+                """
+        Loads rooms from the total_rooms dictionary and commits to database
+                """
+                for room in Room.total_rooms.keys():
+                        room_name = room
+                for rm in Room.offices:
+                        if rm in Room.offices:
+                                room_type = 'office'
+                                room_capacity = 6
+                        elif rm in Room.livingspaces:
+                                room_type = 'livingspace'
+                                room_capacity = 4
+                amity_room = AmityRoom(room_name=room_name, room_type=room_type, capacity=room_capacity)
+
+                try:
+                        amity_session.add(amity_room)
+                except Exception:
+                        return "room data save Failed!"
+
+        def commit_allocations(self):
+                pass
