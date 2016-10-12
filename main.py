@@ -1,43 +1,54 @@
-#!/usr/bin/env python
 """
-Usage:
-    my_program tcp <host> <port> [--timeout=<seconds>]
-    my_program serial <port> [--baud=<n>] [--timeout=<seconds>]
-    my_program (-i | --interactive)
-    my_program (-h | --help | --version)
-Options:
-    -i, --interactive  Interactive Mode
-    -h, --help  Show this screen and exit.
-    --baud=<n>  Baudrate [default: 9600]
+    Commands:
+        create_room <room_name>
+        add_person <first_name> <last_name> <job_type> [accomodation]
+        reallocate_person <person_id> <room_name>
+        load_people <filename>
+        print_allocations [--o=filename]
+        print_unallocated [--o=filename]
+        print_room <room_name>
+        save_state [--db=sqlite_db]
+        load_state <sqlite_db>
+        quit
+
+    Options:
+        -h, --help  Show this screen and exit
+        -o filename  Specify filename
+        --db    Name of SQLite DB
+        --accomodation - prompt on whether one wants or doesn't want accomodation [default='N']
 """
 
-import sys
-import cmd
+
 from docopt import docopt, DocoptExit
+import cmd
+import os
 from pyfiglet import figlet_format
+from App.person import Person
+from App.room import Room
+from App.database import AmityDatabase
+
 
 
 def docopt_cmd(func):
     """
     This decorator is used to simplify the try/except block and pass the result
-    of the docopt parsing to the called action.
+    of the docopt parsing to the called action
     """
+
     def fn(self, arg):
         try:
             opt = docopt(fn.__doc__, arg)
 
         except DocoptExit as e:
-            # The DocoptExit is thrown when the args do not match.
-            # We print a message to the user and the usage block.
-
+            # The DocoptExit is thrown when the args do not match
+            # We print a message to the user and the usage block
             print('Invalid Command!')
             print(e)
             return
 
         except SystemExit:
             # The SystemExit exception prints the usage for --help
-            # We do not need to do the print here.
-
+            # We do not need to do the print here
             return
 
         return func(self, opt)
@@ -48,39 +59,66 @@ def docopt_cmd(func):
     return fn
 
 
-class Interactive (cmd.Cmd):
+def intro():
+    os.system("clear")
+    print(figlet_format('AMITY', font='cosmic'))
+    print('------------------------------------------------------------------------')
+    print('Amity is an automated Allocation System')
+    print('------------------------------------------------------------------------')
+    print('To get started, enter "help" to view the available commands')
+    # print(__doc__)
 
 
-    intro = figlet_format('AMITY', font='cosmic')
-
-
-    prompt = '(allocator@amity) '
-    file = None
-
-    @docopt_cmd
-    def do_tcp(self, arg):
-        """Usage: tcp <host> <port> [--timeout=<seconds>]"""
-
-        print(arg)
+class Amitizer(cmd.Cmd):
+    prompt = '(allocator@amity)'
 
     @docopt_cmd
-    def do_serial(self, arg):
-        """Usage: serial <port> [--baud=<n>] [--timeout=<seconds>]
-Options:
-    --baud=<n>  Baudrate [default: 9600]
-        """
+    def do_create_room(self, arg):
+        """Usage: create_room <room_name>..."""
 
-        print(arg)
+    @docopt_cmd
+    def do_add_person(self, arg):
+        """Usage: add_person <first_name> <last_name> <job_type> [--accomodation]"""
 
+    @docopt_cmd
+    def do_reallocate_person(self, arg):
+        """Usage: reallocate_person  <person_id> <room_name>"""
+
+    @docopt_cmd
+    def do_load_people(self, arg):
+        '''Usage: load_people <filename>'''
+
+    @docopt_cmd
+    def do_print_allocations(self, arg):
+        '''Usage: print_allocations [--o=filename]'''
+
+
+    @docopt_cmd
+    def do_print_unallocated(self, arg):
+        '''Usage: print_unallocated [--o=filename]'''
+
+
+    @docopt_cmd
+    def do_print_room(self, arg):
+        """Usage: print_room <room_name>"""
+
+
+    @docopt_cmd
+    def do_save_state(self, arg):
+        """Usage: save_state [--db=sqlitedb]"""
+
+
+    @docopt_cmd
+    def do_load_state(self, arg):
+        """Usage: load_state <sqlite_database>"""
+
+
+    @docopt_cmd
     def do_quit(self, arg):
-        """Quits out of Interactive Mode."""
-
-        print('Good Bye!')
+        """Usage: quit"""
+        print("Shutting Down Amity......")
         exit()
 
-opt = docopt(__doc__, sys.argv[1:])
-
-if opt['--interactive']:
-    Interactive().cmdloop()
-
-print(opt)
+if __name__ == "__main__":
+    intro()
+    Amitizer().cmdloop()
