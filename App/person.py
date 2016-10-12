@@ -206,8 +206,7 @@ class Person(Amity):
         def commit_people(db_name):
                 # initialize session
                 # loop through people dictionary and get person details
-                room = Room()
-                person = Person()
+
                 global engine
                 engine = create_engine('sqlite:///'+db_name, echo = True)
                 Session = sessionmaker()
@@ -245,3 +244,35 @@ class Person(Amity):
                             session.commit()
                         except Exception:
                             return "person data save not successful"
+
+        @staticmethod
+        def load_people(db_name):
+                global engine
+                engine = create_engine('sqlite:///'+db_name, echo = True)
+                Session = sessionmaker()
+                Session.configure(bind=engine)
+                session = Session()
+                all_people = session.query(AmityPerson).all()
+                all_fellows = session.query(AmityPerson).filter_by(job_type="fellow")
+                all_staff = session.query(AmityPerson).filter_by(job_type="staff")
+                all_unallocated = session.query(AmityPerson).filter_by(is_accomodated="0")
+
+                for person in all_people:
+                    username = str(person.username)
+                    id = str(person.person_id)
+                    temporary = []
+                    temporary.append(username)
+                    for user in temporary:
+                        # Person.total_people.update(id: username)
+                        Person.total_people[id] = username
+                for person in all_fellows:
+                    username = str(person.username)
+                    Person.fellows.append(username)
+                for person in all_staff:
+                    username = str(person.username)
+                    Person.staff.append(username)
+                for person in all_unallocated:
+                    username = str(person.username)
+                    Person.staff.append(username)
+                return "People loaded successfully"
+

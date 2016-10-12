@@ -141,7 +141,30 @@ class Room(Amity):
                         session.add(amity_room)
                         session.commit()
                     except Exception:
-                            return "room data save Failed!"
+                        return "room data save Failed!"
+        @staticmethod
+        def load_rooms(db_name):
+            global engine
+            engine = create_engine('sqlite:///'+db_name, echo = False)
+            Session = sessionmaker()
+            Session.configure(bind=engine)
+            session = Session()
+            all_rooms = session.query(AmityRoom).all()
+            all_offices = session.query(AmityRoom).filter_by(room_type="office")
+            all_livingspaces = session.query(AmityRoom).filter_by(room_type="livingspace")
 
+            for room in all_offices:
+                room_name = str(room.room_name)
+                Room.offices.append(room_name)
 
+            for rm in all_livingspaces:
+                room_name = str(room.room_name)
+                Room.livingspaces.append(room_name)
 
+            for room in all_rooms:
+                room_name = str(room.room_name)
+                temporary = []
+                temporary.append(room_name)
+                for room in temporary:
+                    Room.total_rooms[room_name] = []
+            return 'Room data added successfully'

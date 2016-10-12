@@ -12,7 +12,6 @@ class AmityDatabase(object):
         def __init__(self):
                 pass
 
-
         def save_state(self, db_name):
                 if os.path.exists(db_name):
                         os.remove(db_name)
@@ -27,8 +26,14 @@ class AmityDatabase(object):
 
                 return "Data Has been Saved to Database!"
 
-
-
-
         def load_state(self, db_name):
-                pass
+                if os.path.exists(db_name):
+                        try:
+                                room.Room.load_rooms(db_name)
+                                person.Person.load_people(db_name)
+                        except Exception as e:
+                                print e
+                                message = "Error loading data"
+
+                        return "Data has been loaded from database"
+
