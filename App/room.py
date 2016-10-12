@@ -63,9 +63,9 @@ class Room(Amity):
                                         # print '------------------------------------------------------------------------'
                                         return "There are currently no occupants in {0}".format(rm)
                                 else:
-                                        for occupant, person_id in zip(Room.total_rooms[rm], Person.total_people.keys()):
+                                        for occupant, person_id in zip(Room.total_rooms[rm], person.Person.total_people.keys()):
                                                 if occupant == person_id:
-                                                        person_name = Person.total_people[person_id]
+                                                        person_name = person.Person.total_people[person_id]
                                                         # print '--------------------------------------'
                                                         print person_name
 
@@ -99,10 +99,10 @@ class Room(Amity):
                         room_name = '{0}'.format(room)
                         print room_name
 
-                        print '----------- {0} Occupants--------------'.format(room_name)
+                        print '###### {0} Occupants ######'.format(room_name)
                         if len(Room.total_rooms[room]) < 1:
                                 print '------------------------------------------------------------------------'
-                                return "There are currently no occupants in {0}".format(room)
+                                print "There are currently no occupants in {0}".format(room)
                         else:
                                 for occupant, person_id in zip(Room.total_rooms[room], person.Person.total_people.keys()):
                                         if occupant == person_id:

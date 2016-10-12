@@ -113,6 +113,7 @@ class Person(Amity):
             """
             prints out unallocated people to a specified file
             """
+
             # if file output option specified in arguments, write to file
             if '-o' in args:
                 with open(unallocated, 'wb') as f:
@@ -202,17 +203,17 @@ class Person(Amity):
                 return "The file doesn't exist"
 
         @staticmethod
-        def commit_people(session):
+        def commit_people(db_name):
                 # initialize session
                 # loop through people dictionary and get person details
                 room = Room()
                 person = Person()
                 global engine
-                engine = create_engine('sqlite:///'+db_name, echo = False)
+                engine = create_engine('sqlite:///'+db_name, echo = True)
                 Session = sessionmaker()
                 Session.configure(bind=engine)
                 session = Session()
-                for key in Person().total_people.keys():
+                for key in Person.total_people.keys():
                         person_id = key
                         username = Person.total_people[key]
                         if username in Person.fellows:
@@ -220,7 +221,7 @@ class Person(Amity):
                         else:
                             job_type = 'staff'
                         # check whether tallocated_officehe person is unallocated
-                        if username in Person().unallocated_people:
+                        if username in Person.unallocated_people:
                             is_accomodated = False
                             allocated_livingspace = None
                         else:
@@ -238,7 +239,7 @@ class Person(Amity):
                                             allocated_livingspace = room
 
 
-                        person_info = AmityPerson(person_id=person_id, username=username, job_type=job_type, is_accomodated=is_accomodated)
+                        person_info = AmityPerson(person_id=person_id, username=username, job_type=job_type, is_accomodated=is_accomodated, allocated_livingspace=allocated_livingspace, allocated_office=allocated_office)
                         try:
                             session.add(person_info)
                             session.commit()
