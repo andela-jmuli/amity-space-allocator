@@ -66,7 +66,6 @@ def intro():
     print('Amity is an automated Allocation System')
     print('------------------------------------------------------------------------')
     print('To get started, enter "help" to view the available commands')
-    # print(__doc__)
 
 
 class Amitizer(cmd.Cmd):
@@ -75,32 +74,66 @@ class Amitizer(cmd.Cmd):
     @docopt_cmd
     def do_create_room(self, arg):
         """Usage: create_room <room_name>..."""
+        room = Room()
+        rooms = arg['<room_name>']
+        for rm in rooms:
+            status = room.create_room(rm)
+            print(status)
+
+    @docopt_cmd
+    def do_allocate_room_type(self, arg):
+        """Usage: create_room <room_name>..."""
+        room = Room()
+        room_name = arg['<room_name>']
+        room_type = arg['<room_type>']
+        status = room.allocate_room_type(arg['<room_name>'], arg['<room_type>'])
+        print(status)
 
     @docopt_cmd
     def do_add_person(self, arg):
         """Usage: add_person <first_name> <last_name> <job_type> [--accomodation]"""
 
+
     @docopt_cmd
     def do_reallocate_person(self, arg):
         """Usage: reallocate_person  <person_id> <room_name>"""
+        person = Person()
+        allocate_status = person.reallocate_person(arg['<person_id>'], arg['<room_name>'])
+        print(allocate_status)
 
     @docopt_cmd
     def do_load_people(self, arg):
         '''Usage: load_people <filename>'''
+        person = Person()
+        status = person.load_people(arg['<filename>'])
+        print(status)
 
     @docopt_cmd
     def do_print_allocations(self, arg):
         '''Usage: print_allocations [--o=filename]'''
-
+        room = Room()
+        file = arg['<filename>']
+        option = arg['<-o>']
+        if file is not None:
+            if option in arg:
+                room.print_allocations(file)
+        else:
+            room.print_allocations()
 
     @docopt_cmd
     def do_print_unallocated(self, arg):
-        '''Usage: print_unallocated [--o=filename]'''
+        '''Usage: print_unallocated [filename]'''
+        person = Person()
+        file = arg['<filename>']
+        status = person.print_unallocated(file)
+        print(status)
 
 
     @docopt_cmd
     def do_print_room(self, arg):
         """Usage: print_room <room_name>"""
+        room = Room()
+        room.print_room(arg['<room_name>'])
 
 
     @docopt_cmd
