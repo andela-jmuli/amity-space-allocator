@@ -3,6 +3,7 @@ import os
 from amity import Amity
 # import database
 from models import AmityPerson
+from models import AmityRoom
 from room import Room
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -256,6 +257,7 @@ class Person(Amity):
                 all_fellows = session.query(AmityPerson).filter_by(job_type="fellow")
                 all_staff = session.query(AmityPerson).filter_by(job_type="staff")
                 all_unallocated = session.query(AmityPerson).filter_by(is_accomodated="0")
+                rooms = session.query(AmityRoom).all()
 
                 for person in all_people:
                     username = str(person.username)
@@ -274,5 +276,17 @@ class Person(Amity):
                 for person in all_unallocated:
                     username = str(person.username)
                     Person.staff.append(username)
+                for room in rooms:
+                    room_name = str(room.room_name)
+                    room_type = str(room.room_type)
+                    if room_type == 'office':
+                        for person in all_people:
+                            if person.allocated_office == room_name:
+                                Room.total_rooms[room_name].append(person.person_id)
+                    elif room_type == 'livingspace':
+                        for person in all_people:
+                            if person.allocated_livingspace == room_name:
+                                Room.total_rooms[room_name].append(person.person_id)
+
                 return "People loaded successfully"
 
