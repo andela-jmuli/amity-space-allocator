@@ -42,7 +42,6 @@ class Person(Amity):
             self.last_name = last_name
             self.job_type = job_type
             self.wants_accomodation = wants_accomodation
-            room = Room()
             self.username = first_name + last_name
             # add new person to the total people list with a new ID
 
@@ -62,13 +61,13 @@ class Person(Amity):
                     allocated_office = random.choice(Room.offices)
                     # allocate the new person as an occupant of selected room
                     # Room.total_rooms = defaultdict(list)
-                    for key in room.total_rooms.keys():
+                    for key in Room.total_rooms.keys():
 
                         if key == allocated_office:
-                            if len(room.total_rooms[key]) == 6:
+                            if len(Room.total_rooms[key]) == 6:
                                 return "The office is currently fully occupied"
                             else:
-                                room.total_rooms[key].append(self.person_id)
+                                Room.total_rooms[key].append(self.person_id)
 
 
                 else:
@@ -82,13 +81,13 @@ class Person(Amity):
                         allocated_livingspace = random.choice(Room.livingspaces)
 
                         # allocate the new person as an occupant of the livingspace
-                        Room.total_rooms = defaultdict(list)
-                        for key in room.total_rooms.keys():
+                        # Room.total_rooms = defaultdict(list)
+                        for key in Room.total_rooms.keys():
                             if key == allocated_livingspace:
-                                if len(room.total_rooms[key]) == 4:
+                                if len(Room.total_rooms[key]) == 4:
                                     return "The livingspace is curently fully occupied"
                                 else:
-                                    room.total_rooms[key].append(self.person_id)
+                                    Room.total_rooms[key].append(self.person_id)
 
                     else:
                         return "There are currently no livingspaces"
@@ -102,10 +101,10 @@ class Person(Amity):
                 Person.staff.append(self.username)
                 allocated_office = random.choice(Room.offices)
 
-                room.total_rooms = defaultdict(list)
-                for key, occupant in room.total_rooms:
+                Room.total_rooms = defaultdict(list)
+                for key, occupant in Room.total_rooms:
                     if key == allocated_office:
-                        room.total_rooms[key].append(self.person_id)
+                        Room.total_rooms[key].append(self.person_id)
 
                 if wants_accomodation == 'Y':
                     return "Staff members are not allocated livingspaces"
@@ -133,12 +132,12 @@ class Person(Amity):
 
             # check for the room's existance
             if room_name not in Room.total_rooms.keys():
-                return "The room either desn't exist or is not allocated!"
+                return "The room doesn't exist!"
 
             # check whether the person is already in the allocated room
-            for room in Room.total_rooms.iteritems():
+            for room in Room.total_rooms.keys():
                 if room == room_name:
-                    for occupant in Room.total_rooms[room_name]:
+                    for occupant in Room.total_rooms[room]:
                         if person_id == occupant:
                             return "The Person is already allocated in the requested room"
 
@@ -162,14 +161,13 @@ class Person(Amity):
             # start livingspace allocation if room is a livingspace
             elif room_name in Room.livingspaces:
 
-                for key in Room.total_rooms.iteritems():
+                for key in Room.total_rooms.keys():
                     if key == room_name:
                         if len(Room.total_rooms[key]) == 4:
                             return "Sorry the LivingSpace is currently fully occupied!"
                         else:
                             Room.total_rooms[key].append(person_id)
                             print "Allocation to New livingSpace successful!"
-
 
         def load_people(self, filename):
             """
@@ -208,12 +206,13 @@ class Person(Amity):
                 # initialize session
                 # loop through people dictionary and get person details
                 room = Room()
+                person = Person()
                 global engine
                 engine = create_engine('sqlite:///'+db_name, echo = False)
                 Session = sessionmaker()
                 Session.configure(bind=engine)
                 session = Session()
-                for key in Person.total_people.keys():
+                for key in Person().total_people.keys():
                         person_id = key
                         username = Person.total_people[key]
                         if username in Person.fellows:
@@ -221,12 +220,12 @@ class Person(Amity):
                         else:
                             job_type = 'staff'
                         # check whether tallocated_officehe person is unallocated
-                        if username in Person.unallocated_people:
+                        if username in Person().unallocated_people:
                             is_accomodated = False
                             allocated_livingspace = None
                         else:
                             is_accomodated = True
-                            # get allocated_office
+                        # get allocated_office
                         for room in Room.total_rooms:
                             if room in Room.offices:
                                 for occupant in Room.total_rooms[room]:
@@ -245,4 +244,3 @@ class Person(Amity):
                             session.commit()
                         except Exception:
                             return "person data save not successful"
-
