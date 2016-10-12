@@ -82,23 +82,31 @@ class Amitizer(cmd.Cmd):
 
     @docopt_cmd
     def do_allocate_room_type(self, arg):
-        """Usage: create_room <room_name>..."""
+        """Usage: create_room <room_name>"""
         room = Room()
         room_name = arg['<room_name>']
         room_type = arg['<room_type>']
-        status = room.allocate_room_type(arg['<room_name>'], arg['<room_type>'])
+        status = room.allocate_room_type(room_name, room_type)
         print(status)
 
     @docopt_cmd
     def do_add_person(self, arg):
         """Usage: add_person <first_name> <last_name> <job_type> [--accomodation]"""
-
+        person = Person()
+        first_name = arg['<first_name>']
+        last_name = arg['<last_name>']
+        job_type = arg['<job_type>']
+        accomodation = arg['<accomodation>']
+        added_status = person.add_person(first_name, last_name, job_type, accomodation)
+        print(added_status)
 
     @docopt_cmd
     def do_reallocate_person(self, arg):
         """Usage: reallocate_person  <person_id> <room_name>"""
         person = Person()
-        allocate_status = person.reallocate_person(arg['<person_id>'], arg['<room_name>'])
+        person_id = arg['<person_id>']
+        room_name = arg['<room_name>']
+        allocate_status = person.reallocate_person(person_id, room_name)
         print(allocate_status)
 
     @docopt_cmd
@@ -128,23 +136,20 @@ class Amitizer(cmd.Cmd):
         status = person.print_unallocated(file)
         print(status)
 
-
     @docopt_cmd
     def do_print_room(self, arg):
         """Usage: print_room <room_name>"""
         room = Room()
-        room.print_room(arg['<room_name>'])
-
+        room_name = arg['<room_name>']
+        room.print_room(room_name)
 
     @docopt_cmd
     def do_save_state(self, arg):
         """Usage: save_state [--db=sqlitedb]"""
 
-
     @docopt_cmd
     def do_load_state(self, arg):
         """Usage: load_state <sqlite_database>"""
-
 
     @docopt_cmd
     def do_quit(self, arg):
