@@ -1,6 +1,7 @@
 """
     Commands:
         create_room <room_name>
+        allocate_room_type <room_name> <room_type>
         add_person <first_name> <last_name> <job_type> [accomodation]
         reallocate_person <person_id> <room_name>
         load_people <filename>
@@ -58,7 +59,6 @@ def docopt_cmd(func):
     fn.__dict__.update(func.__dict__)
     return fn
 
-
 def intro():
     os.system("clear")
     print(figlet_format('AMITY', font='cosmic'))
@@ -69,7 +69,7 @@ def intro():
 
 
 class Amitizer(cmd.Cmd):
-    prompt = '(allocator@amity)'
+    prompt = 'allocator@amity ~ '
 
     @docopt_cmd
     def do_create_room(self, arg):
