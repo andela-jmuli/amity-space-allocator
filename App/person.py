@@ -29,6 +29,8 @@ class Person(Amity):
         unallocated_people = []
         allocated_people = []
         fellows = []
+        fellows_not_unallocated_office = []
+        staff_not_unallocated_office = []
 
         def __init__(self):
             super(Amity, self).__init__()
@@ -53,45 +55,42 @@ class Person(Amity):
             Person.total_people[new_person_id] = self.username
 
             # check the person's job type
-            if job_type == 'Fellow':
+            if job_type == 'Fellow' or job_type == 'FELLOW':
                 Person.fellows.append(self.username)
 
-                # sanity check for empty list errors
-                if len(Room.offices) > 0:
-                    # allocate an office to the new fellow
-                    allocated_office = random.choice(Room.offices)
-                    # allocate the new person as an occupant of selected room
-                    # Room.total_rooms = defaultdict(list)
-                    for key in Room.total_rooms.keys():
+                # check if offices are available
+                if len(Room.offices) <= 0:
 
-                        if key == allocated_office:
-                            if len(Room.total_rooms[key]) == 6:
-                                return "The office is currently fully occupied"
-                            else:
-                                Room.total_rooms[key].append(self.person_id)
-
+                    Person.fellows_not_unallocated_office.append(self.username)
+                    print "There are no offices available, adding to unallocated-without-offices..."
 
                 else:
-                    return "There are currently no offices"
+                    # allocate an office to the new fellow
+                    allocated_office = random.choice(Room.offices)
+
+                    if len(Room.total_rooms[allocated_office]) < 6:
+                        Room.total_rooms[allocated_office].append(self.person_id)
+
+                    else:
+                        Person.fellows_not_unallocated_office.append(self.username)
+                        print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
 
                 if wants_accomodation == 'Y':
                     # sanity check for empty list
-                    if len(Room.livingspaces) > 1:
+                    if len(Room.livingspaces) <= 0:
+                        return "There are currently no livingspaces"
+                    else:
                         # allocate a random livingspace
                         allocated_livingspace = random.choice(Room.livingspaces)
 
                         # allocate the new person as an occupant of the livingspace
-                        # Room.total_rooms = defaultdict(list)
-                        for key in Room.total_rooms.keys():
+                        if len(Room.total_rooms[allocated_livingspace]) < 6:
+                            Room.total_rooms[allocated_livingspace].append(self.person_id)
+                            print "Office allocated successfully!"
+                        else:
+                            Person.unallocated.append(self.username)
+                            print "sorry all livingspaces are currently fully occupied, adding to unallocated..."
 
-                            if key == allocated_livingspace:
-                                if len(Room.total_rooms[key]) == 4:
-                                    return "The livingspace is curently fully occupied"
-                                else:
-                                    Room.total_rooms[key].append(self.person_id)
-
-                    else:
-                        return "There are currently no livingspaces"
 
                 elif wants_accomodation == 'N':
                     Person.unallocated_people.append(self.username)
@@ -102,13 +101,14 @@ class Person(Amity):
                 Person.staff.append(self.username)
                 allocated_office = random.choice(Room.offices)
 
-                # Room.total_rooms = defaultdict(list)
-                for key in Room.total_rooms.keys():
-                    if key == allocated_office:
-                        Room.total_rooms[key].append(self.person_id)
+                if len(Room.total_rooms[allocated_office]) < 6:
+                    Room.total_rooms[allocated_office].append(self.person_id)
+                    print "Office allocated successfully!"
+                else:
+                    Person.staff_not_unallocated_office.append(self.username)
+                    print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
 
                 if wants_accomodation == 'Y':
-                    Person.unallocated_people.append(self.username)
                     return "Staff members are not allocated livingspaces"
                 else:
                     return "Staff member added successfully"
