@@ -4,7 +4,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Table, Column, Integer, String, Boolean
 
-# engine = create_engine('sqlite:///amity.db', echo = False)
 
 Base = declarative_base()
 
