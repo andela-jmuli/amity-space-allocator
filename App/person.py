@@ -48,10 +48,12 @@ class Person(Amity):
             self.username = first_name + last_name
             # add new person to the total people list with a new ID
 
+            # add new person to the total people list with a new ID
             total_ids = len(Person.total_people)
             new_person_id = total_ids + 1
             self.person_id = new_person_id
 
+            # Append the user to the people dictionary
             Person.total_people[new_person_id] = self.username
 
             # check the person's job type
@@ -166,13 +168,19 @@ class Person(Amity):
 
             # start livingspace allocation if room is a livingspace
             elif room_name in Room.livingspaces:
+                for id in Person.total_people:
+                    if person_id == Person.total_people[id]:
+                        username = username
+                        if username in Person.staff:
+                            return "Staff members are not allocated living spaces"
 
-                for key in Room.total_rooms.keys():
-                    if key == room_name:
-                        if len(Room.total_rooms[key]) > 4:
-                            return "Sorry the LivingSpace is currently fully occupied!"
                         else:
-                            Room.total_rooms[key].append(person_id)
+                            for key in Room.total_rooms.keys():
+                                if key == room_name:
+                                    if len(Room.total_rooms[key]) > 4:
+                                        return "Sorry the LivingSpace is currently fully occupied!"
+                                    else:
+                                        Room.total_rooms[key].append(person_id)
 
 
                 for room in Room.total_rooms.keys():
