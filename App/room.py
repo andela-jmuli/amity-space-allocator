@@ -50,7 +50,6 @@ class Room(Amity):
                 """
                 This method prints out the name of all the people in the specified room
                 """
-
                 for rm in Room.total_rooms.keys():
                         # first check whether room is existent as key of total_rooms dict.
                         if room_name not in Room.total_rooms:
@@ -60,14 +59,13 @@ class Room(Amity):
                         if rm == room_name:
                                 # check number of occupants
                                 if len(Room.total_rooms[rm]) < 1:
-                                        # print '------------------------------------------------------------------------'
                                         return "There are currently no occupants in {0}".format(rm)
                                 else:
-                                        for occupant, person_id in zip(Room.total_rooms[rm], person.Person.total_people.keys()):
-                                                if occupant == person_id:
-                                                        person_name = person.Person.total_people[person_id]
-                                                        # print '--------------------------------------'
-                                                        print person_name
+                                    for occupant in Room.total_rooms[room_name]:
+                                        for person_id in person.Person.total_people:
+                                            if person_id == occupant:
+                                                occupant_name = person.Person.total_people[person_id]
+                                                print occupant_name
 
         def allocate_room_type(self, room_name, room_type):
                 """
@@ -94,26 +92,24 @@ class Room(Amity):
 
                 # loop through all rooms
                 print "Room Allocation Data:"
-                print '--------------------------------------'
+                print '**********************'
+                print " ID ----- Person Name"
+                print '                                  '
                 for room in Room.total_rooms.keys():
-                        room_name = '{0}'.format(room)
-                        print room_name
-
-                        print '###### {0} Occupants ######'.format(room_name)
-                        if len(Room.total_rooms[room]) < 1:
-                                print '------------------------------------------------------------------------'
-                                print "There are currently no occupants in {0}".format(room)
+                        if room in Room.offices:
+                            print '### ### {0} office occupants ######'.format(room)
                         else:
-                                for occupant, person_id in zip(Room.total_rooms[room], person.Person.total_people.keys()):
-                                        if occupant == person_id:
-                                                person_name = person.Person.total_people[person_id]
-                                                print person_name
-                                                print '--------------------------------------'
+                            print '###### {0} living space occupants ######'.format(room)
+                        if len(Room.total_rooms[room]) < 1:
+                            print '------------------------------------------------------------------------'
+                            print "There are currently no occupants in {0}".format(room)
+                        else:
+                            for occupant in Room.total_rooms[room]:
+                                for person_id in person.Person.total_people.keys():
+                                    if occupant == person_id:
+                                            person_name = person.Person.total_people[person_id]
 
-                if '-o' in args:
-                        with open('allocations', 'wb') as f:
-                                # write data as output
-                                write_allocations = f.write(data)
+                                            print "{0} ----- {1}".format(person_id, person_name)
 
         @staticmethod
         def commit_rooms(db_name):

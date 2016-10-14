@@ -55,7 +55,7 @@ class Person(Amity):
             Person.total_people[new_person_id] = self.username
 
             # check the person's job type
-            if job_type == 'Fellow' or job_type == 'FELLOW':
+            if job_type == 'Fellow' or job_type == 'FELLOW' or job_type == 'fellow':
                 Person.fellows.append(self.username)
 
                 # check if offices are available
@@ -73,7 +73,7 @@ class Person(Amity):
 
                     else:
                         Person.fellows_not_unallocated_office.append(self.username)
-                        print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
+                        return "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
 
                 if wants_accomodation == 'Y':
                     # sanity check for empty list
@@ -84,26 +84,26 @@ class Person(Amity):
                         allocated_livingspace = random.choice(Room.livingspaces)
 
                         # allocate the new person as an occupant of the livingspace
-                        if len(Room.total_rooms[allocated_livingspace]) < 6:
+                        if len(Room.total_rooms[allocated_livingspace]) < 4:
                             Room.total_rooms[allocated_livingspace].append(self.person_id)
-                            print "Office allocated successfully!"
+
                         else:
-                            Person.unallocated.append(self.username)
-                            print "sorry all livingspaces are currently fully occupied, adding to unallocated..."
+                            Person.unallocated_people.append(self.username)
+                            return "sorry all livingspaces are currently fully occupied, adding to unallocated..."
 
 
                 elif wants_accomodation == 'N':
                     Person.unallocated_people.append(self.username)
 
 
-            elif job_type == 'Staff':
+            elif job_type == 'Staff' or job_type == 'STAFF' or job_type == 'staff':
 
                 Person.staff.append(self.username)
                 allocated_office = random.choice(Room.offices)
 
                 if len(Room.total_rooms[allocated_office]) < 6:
                     Room.total_rooms[allocated_office].append(self.person_id)
-                    print "Office allocated successfully!"
+
                 else:
                     Person.staff_not_unallocated_office.append(self.username)
                     print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
@@ -146,13 +146,6 @@ class Person(Amity):
                         if person_id == occupant:
                             return "The Person is already allocated in the requested room"
 
-            # remove person in the already allocated room
-            # for room in Room.total_rooms.keys():
-            #     if room != room_name:
-            #         for occupant in Room.total_rooms[room]:
-            #             if person_id == occupant:
-            #                 Room.total_rooms[room].remove(person_id)
-
             # start office allocation, if room is an office
             if room_name in Room.offices:
 
@@ -188,6 +181,7 @@ class Person(Amity):
                             if person_id == occupant:
                                 Room.total_rooms[room].remove(person_id)
                                 print "Allocation to New livingSpace successful!"
+
         def load_people_data(self, filename):
             """
             Adds people to rooms from a text file
@@ -208,8 +202,10 @@ class Person(Amity):
                             first_name = person_data[0]
                             last_name = person_data[1]
                             job_type = person_data[2]
-                            accomodation = person_data[3]
-
+                            try:
+                                accomodation = person_data[3]
+                            except Exception:
+                                accomodation = 'N'
                             person = Person()
                             person.add_person(first_name, last_name, job_type, accomodation)
 
@@ -237,7 +233,7 @@ class Person(Amity):
                         # check whether tallocated_officehe person is unallocated
                         if username in Person.unallocated_people:
                             is_accomodated = False
-                            allocated_livingspace = None
+                            allocated_livingspace = 'unallocated'
                         else:
                             is_accomodated = True
                         # get allocated_office
