@@ -29,8 +29,8 @@ class Person(Amity):
         unallocated_people = []
         allocated_people = []
         fellows = []
-        fellows_not_unallocated_office = []
-        staff_not_unallocated_office = []
+        fellows_not_allocated_office = []
+        staff_not_allocated_office = []
 
         def __init__(self):
             super(Amity, self).__init__()
@@ -63,18 +63,16 @@ class Person(Amity):
                 # check if offices are available
                 if len(Room.offices) <= 0:
 
-                    Person.fellows_not_unallocated_office.append(self.username)
+                    Person.fellows_not_allocated_office.append(self.username)
                     print "There are no offices available, adding to unallocated-without-offices..."
-
                 else:
                     # allocate an office to the new fellow
                     allocated_office = random.choice(Room.offices)
 
                     if len(Room.total_rooms[allocated_office]) < 6:
                         Room.total_rooms[allocated_office].append(self.person_id)
-
                     else:
-                        Person.fellows_not_unallocated_office.append(self.username)
+                        Person.fellows_not_allocated_office.append(self.username)
                         return "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
 
                 if wants_accomodation == 'Y':
@@ -97,7 +95,6 @@ class Person(Amity):
                 elif wants_accomodation == 'N':
                     Person.unallocated_people.append(self.username)
 
-
             elif job_type == 'Staff' or job_type == 'STAFF' or job_type == 'staff':
 
                 Person.staff.append(self.username)
@@ -107,7 +104,7 @@ class Person(Amity):
                     Room.total_rooms[allocated_office].append(self.person_id)
 
                 else:
-                    Person.staff_not_unallocated_office.append(self.username)
+                    Person.staff_not_allocated_office.append(self.username)
                     print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
 
                 if wants_accomodation == 'Y':
@@ -182,7 +179,6 @@ class Person(Amity):
                                     else:
                                         Room.total_rooms[key].append(person_id)
 
-
                 for room in Room.total_rooms.keys():
                     if room != room_name and room not in Room.offices:
                         for occupant in Room.total_rooms[room]:
@@ -223,49 +219,68 @@ class Person(Amity):
 
         @staticmethod
         def commit_people(db_name):
-                # initialize session
-                # loop through people dictionary and get person details
-
+            """
+        method called to commit person objects to database class
+            """
                 global engine
                 engine = create_engine('sqlite:///'+db_name, echo = True)
                 Session = sessionmaker()
                 Session.configure(bind=engine)
                 session = Session()
                 for key in Person.total_people.keys():
-                        person_id = key
-                        username = Person.total_people[key]
-                        if username in Person.fellows:
-                            job_type = 'fellow'
+                    person_id = key
+                    username = Person.total_people[key]
+                    if username in Person.fellows:
+                        job_type = 'fellow'
+
+                        # check whether person has an office
+                        if username in Person.fellows_not_allocated_office:
+                            allocated_office = 'unallocated'
                         else:
-                            job_type = 'staff'
-                        # check whether tallocated_officehe person is unallocated
+                            for room in Room.total_rooms:
+                                if room in Room.offices:
+                                    for occupant in Room.total_rooms[room]:
+                                        if person_id == occupant:
+                                            allocated_office = room
+
+                        # check whether person has a living space
                         if username in Person.unallocated_people:
                             is_accomodated = False
                             allocated_livingspace = 'unallocated'
                         else:
                             is_accomodated = True
-                        # get allocated_office
-                        for room in Room.total_rooms:
-                            if room in Room.offices:
-                                for occupant in Room.total_rooms[room]:
-                                    if person_id == occupant:
-                                        allocated_office = room
-
-                            elif room in Room.livingspaces:
+                            for room in Room.total_rooms:
+                                if room in Room.livingspaces:
                                     for occupant in Room.total_rooms[room]:
                                         if person_id == occupant:
                                             allocated_livingspace = room
 
-
-                        person_info = AmityPerson(person_id=person_id, username=username, job_type=job_type, is_accomodated=is_accomodated, allocated_livingspace=allocated_livingspace, allocated_office=allocated_office)
-                        try:
-                            session.add(person_info)
-                            session.commit()
-                        except Exception:
-                            return "person data save not successful"
+                    # if the person is a staff...
+                    elif username in Person.staff:
+                        job_type = 'staff'
+                        allocated_livingspace = 'unallocated'
+                        if username in Person.staff_not_allocated_office:
+                            is_accomodated = False
+                            allocated_office = 'unallocated'
+                        else:
+                            for room in Room.total_rooms:
+                                if room in Room.offices:
+                                    for occupant in Room.total_rooms[room]:
+                                        if person_id == occupant:
+                                            allocated_office = room
+                    # commit person data as an object of AmityPerson class (database table for Person)
+                    person_info = AmityPerson(person_id=person_id, username=username, job_type=job_type, is_accomodated=is_accomodated, allocated_livingspace=allocated_livingspace, allocated_office=allocated_office)
+                    try:
+                        session.add(person_info)
+                        session.commit()
+                    except Exception:
+                        return "person data save not successful"
 
         @staticmethod
         def load_people(db_name):
+            """
+            method called to load person data from database tables to respective data structures
+            """
                 global engine
                 engine = create_engine('sqlite:///'+db_name, echo = True)
                 Session = sessionmaker()
