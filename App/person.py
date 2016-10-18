@@ -164,22 +164,18 @@ class Person(Amity):
                 return "The room doesn't exist!"
 
             # check whether the person is already in the allocated room
-            for room in Room.total_rooms.keys():
-                if room == room_name:
-                    for occupant in Room.total_rooms[room]:
-                        if person_id == occupant:
-                            return "The Person is already allocated in the requested room"
+            if person_id in Room.total_rooms[room_name]:
+                return "The Person is already allocated in the requested room"
 
             # start office allocation, if room is an office
             if room_name in Room.offices:
 
                 for key in Room.total_rooms.keys():
                     if key == room_name:
-                        if len(Room.total_rooms[room_name]) > 6:
-                            return "Sorry the office is occupied fully"
-                        else:
+                        if len(Room.total_rooms[room_name]) < 6:
                             Room.total_rooms[room_name].append(person_id)
-
+                        else:
+                            return "Sorry the office is occupied fully"
 
                 for room in Room.total_rooms.keys():
                     if room != room_name and room not in Room.livingspaces:
@@ -202,13 +198,27 @@ class Person(Amity):
                             return "Sorry the LivingSpace is currently fully occupied!"
                         else:
                             Room.total_rooms[room_name].append(person_id)
+                            # print "Allocation to New livingSpace successful!"
+
 
                 for room in Room.total_rooms.keys():
                     if room != room_name and room not in Room.offices:
-                        for occupant in Room.total_rooms[room]:
-                            if person_id == occupant:
-                                Room.total_rooms[room].remove(person_id)
-                                print "Allocation to New livingSpace successful!"
+                        if person_id in Room.total_rooms[room]:
+                            Room.total_rooms[room].remove(person_id)
+                            print "Allocation to New livingSpace successful!"
+
+            else:
+                print ('Living Space : %s ' % Room.livingspaces)
+                print ('Office Space : %s ' % Room.offices)
+                return  room_name  + '  was not  Allocated '
+
+        def remove_person_from_room(self):
+            for room in Room.total_rooms.keys():
+                if room not in Room.offices and person_id in Room.total_rooms[room]:
+                    Room.total_rooms[room].remove(person_id)
+                    return True
+            return 'Failed To Delete person'
+                            # print "Allocation to New livingSpace successful!"
 
         def load_people_data(self, filename):
             """
@@ -226,6 +236,7 @@ class Person(Amity):
                         return "The file is empty"
                     else:
                         for line in content:
+                            # line = line[:line]
                             person_data = line.split()
                             first_name = person_data[0]
                             last_name = person_data[1]
@@ -247,7 +258,7 @@ class Person(Amity):
             method called to commit person objects to database class
             """
             global engine
-            engine = create_engine('sqlite:///'+db_name, echo = True)
+            engine = create_engine('sqlite:///'+db_name, echo = False)
             Session = sessionmaker()
             Session.configure(bind=engine)
             session = Session()
@@ -256,7 +267,6 @@ class Person(Amity):
                 username = Person.total_people[key]
                 if username in Person.fellows:
                     job_type = 'fellow'
-                    import ipdb; ipdb.set_trace()
                     # check whether person has an office
                     if username in Person.fellows_not_allocated_office:
                         allocated_office = 'unallocated'
@@ -297,6 +307,7 @@ class Person(Amity):
                 try:
                     session.add(person_info)
                     session.commit()
+                    session.close()
                 except Exception:
                     return "person data save not successful"
 
@@ -306,7 +317,7 @@ class Person(Amity):
             method called to load person data from database tables to respective data structures
             """
             global engine
-            engine = create_engine('sqlite:///'+db_name, echo = True)
+            engine = create_engine('sqlite:///'+db_name, echo = False)
             Session = sessionmaker()
             Session.configure(bind=engine)
             session = Session()
@@ -320,10 +331,7 @@ class Person(Amity):
             for person in all_people:
                 username = str(person.username)
                 id = int(person.person_id)
-                temporary = []
-                temporary.append(username)
-                for user in temporary:
-                    Person.total_people[id] = username
+                Person.total_people[id] = username
 
             # get the fellows
             for person in all_fellows:
