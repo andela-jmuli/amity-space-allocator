@@ -108,8 +108,10 @@ class Room(Amity):
                                 for person_id in person.Person.total_people.keys():
                                     if occupant == person_id:
                                             person_name = person.Person.total_people[person_id]
-
-                                            print "{0} ----- {1}".format(person_id, person_name)
+                                            if person_name in person.Person.fellows:
+                                                print "{0}, F ----- {1}".format(person_id, person_name)
+                                            elif person_name in person.Person.staff:
+                                                print "{0}, S ----- {1}".format(person_id, person_name)
 
         @staticmethod
         def commit_rooms(db_name):
@@ -136,6 +138,7 @@ class Room(Amity):
                     try:
                         session.add(amity_room)
                         session.commit()
+                        session.close()
                     except Exception:
                         return "room data save Failed!"
         @staticmethod
@@ -146,21 +149,13 @@ class Room(Amity):
             Session.configure(bind=engine)
             session = Session()
             all_rooms = session.query(AmityRoom).all()
-            all_offices = session.query(AmityRoom).filter_by(room_type="office")
-            all_livingspaces = session.query(AmityRoom).filter_by(room_type="livingspace")
-
-            for room in all_offices:
-                room_name = str(room.room_name)
-                Room.offices.append(room_name)
-
-            for rm in all_livingspaces:
-                room_name = str(room.room_name)
-                Room.livingspaces.append(room_name)
 
             for room in all_rooms:
                 room_name = str(room.room_name)
-                temporary = []
-                temporary.append(room_name)
-                for room in temporary:
-                    Room.total_rooms[room_name] = []
+                room_type = str(room.room_type)
+                if "office" in str(room.room_type) :
+                    Room.offices.append(room_name)
+                else:
+                    Room.livingspaces.append(room_name)
+                Room.total_rooms[room_name] = []
             return 'Room data added successfully'
