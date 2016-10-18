@@ -175,10 +175,10 @@ class Person(Amity):
 
                 for key in Room.total_rooms.keys():
                     if key == room_name:
-                        if len(Room.total_rooms[key]) > 6:
+                        if len(Room.total_rooms[room_name]) > 6:
                             return "Sorry the office is occupied fully"
                         else:
-                            Room.total_rooms[key].append(person_id)
+                            Room.total_rooms[room_name].append(person_id)
 
 
                 for room in Room.total_rooms.keys():
@@ -188,7 +188,7 @@ class Person(Amity):
                                 Room.total_rooms[room].remove(person_id)
                                 print "Allocation to New office successfull!"
 
-            # start livingspace allocation if room is a livingspace
+            # start livingspace re-allocation if room is a livingspace
             elif room_name in Room.livingspaces:
                 for id in Person.total_people:
                     if person_id == Person.total_people[id]:
@@ -196,13 +196,12 @@ class Person(Amity):
                         if username in Person.staff:
                             return "Staff members are not allocated living spaces"
 
+                for key in Room.total_rooms.keys():
+                    if key == room_name:
+                        if len(Room.total_rooms[room_name]) > 4:
+                            return "Sorry the LivingSpace is currently fully occupied!"
                         else:
-                            for key in Room.total_rooms.keys():
-                                if key == room_name:
-                                    if len(Room.total_rooms[key]) > 4:
-                                        return "Sorry the LivingSpace is currently fully occupied!"
-                                    else:
-                                        Room.total_rooms[key].append(person_id)
+                            Room.total_rooms[room_name].append(person_id)
 
                 for room in Room.total_rooms.keys():
                     if room != room_name and room not in Room.offices:
@@ -257,7 +256,7 @@ class Person(Amity):
                 username = Person.total_people[key]
                 if username in Person.fellows:
                     job_type = 'fellow'
-
+                    import ipdb; ipdb.set_trace()
                     # check whether person has an office
                     if username in Person.fellows_not_allocated_office:
                         allocated_office = 'unallocated'
@@ -268,7 +267,7 @@ class Person(Amity):
                                     if person_id == occupant:
                                         allocated_office = room
 
-                    # check whether person has a living space
+                    # check whether fellow has a living space
                     if username in Person.unallocated_people:
                         is_accomodated = False
                         allocated_livingspace = 'unallocated'
