@@ -1,7 +1,7 @@
 import unittest
 import os
-from App.room import Room
 from App.person import Person
+from App.room import Room
 
 
 class TestRoom(unittest.TestCase):
