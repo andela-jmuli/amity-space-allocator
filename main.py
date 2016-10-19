@@ -2,20 +2,20 @@
     Commands:
         create_room <room_name>
         allocate_room_type <room_name> <room_type>
-        add_person <first_name> <last_name> <job_type> [accomodation]
+        add_person <first_name> <last_name> <job_type> <accomodation>
         reallocate_person <person_id> <room_name>
         load_people <filename>
         print_allocations [--o=filename]
         print_unallocated [--o=filename]
         print_room <room_name>
-        save_state [--db=sqlite_db]
+        save_state [--db=sqlitedb]
         load_state <sqlite_db>
         quit
 
     Options:
         -h, --help  Show this screen and exit
         -o filename  Specify filename
-        --db    Name of SQLite DB
+        --db  Name of SQLite DB
         --accomodation - prompt on whether one wants or doesn't want accomodation [default='N']
 """
 
@@ -78,11 +78,10 @@ class Amitizer(cmd.Cmd):
         rooms = arg['<room_name>']
         for rm in rooms:
             status = room.create_room(rm)
-            print(status)
 
     @docopt_cmd
     def do_allocate_room_type(self, arg):
-        """Usage: create_room <room_name>"""
+        """Usage: allocate_room_type <room_name> <room_type>"""
         room = Room()
         room_name = arg['<room_name>']
         room_type = arg['<room_type>']
@@ -91,65 +90,69 @@ class Amitizer(cmd.Cmd):
 
     @docopt_cmd
     def do_add_person(self, arg):
-        """Usage: add_person <first_name> <last_name> <job_type> [--accomodation]"""
+        """Usage: add_person <first_name> <last_name> <job_type> <accomodation>"""
         person = Person()
         first_name = arg['<first_name>']
         last_name = arg['<last_name>']
         job_type = arg['<job_type>']
         accomodation = arg['<accomodation>']
-        added_status = person.add_person(first_name, last_name, job_type, accomodation)
-        print(added_status)
+        person.add_person(first_name, last_name, job_type, accomodation)
 
     @docopt_cmd
     def do_reallocate_person(self, arg):
         """Usage: reallocate_person  <person_id> <room_name>"""
         person = Person()
-        person_id = arg['<person_id>']
-        room_name = arg['<room_name>']
-        allocate_status = person.reallocate_person(person_id, room_name)
+        allocate_status = person.reallocate_person(int(arg['<person_id>']), arg['<room_name>'])
         print(allocate_status)
 
     @docopt_cmd
     def do_load_people(self, arg):
         '''Usage: load_people <filename>'''
         person = Person()
-        status = person.load_people(arg['<filename>'])
-        print(status)
+        person.load_people_data(arg['<filename>'])
 
     @docopt_cmd
     def do_print_allocations(self, arg):
         '''Usage: print_allocations [--o=filename]'''
         room = Room()
-        file = arg['<filename>']
-        option = arg['<-o>']
+        file = arg['--o']
         if file is not None:
-            if option in arg:
-                room.print_allocations(file)
+            room.print_allocations(file)
         else:
             room.print_allocations()
 
     @docopt_cmd
     def do_print_unallocated(self, arg):
-        '''Usage: print_unallocated [filename]'''
+        '''Usage: print_unallocated [--o=filename]'''
         person = Person()
-        file = arg['<filename>']
-        status = person.print_unallocated(file)
-        print(status)
+        file = arg['--o']
+        if file is not None:
+            person.print_unallocated(file)
+        else:
+            person.print_unallocated()
 
     @docopt_cmd
     def do_print_room(self, arg):
         """Usage: print_room <room_name>"""
         room = Room()
-        room_name = arg['<room_name>']
-        room.print_room(room_name)
+        room.print_room(arg['<room_name>'])
 
     @docopt_cmd
     def do_save_state(self, arg):
         """Usage: save_state [--db=sqlitedb]"""
+        amity = AmityDatabase()
+        db_name = arg['--db']
+        if db_name is not None:
+            amity.save_state(arg['--db'])
+        else:
+            if os.path.exists('amity.db'):
+                amity.save_state('amity.db')
 
     @docopt_cmd
     def do_load_state(self, arg):
         """Usage: load_state <sqlite_database>"""
+        amity = AmityDatabase()
+        amity.load_state(arg['<sqlite_database>'])
 
     @docopt_cmd
     def do_quit(self, arg):
