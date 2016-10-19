@@ -99,7 +99,6 @@ class Person(Amity):
                                 return "sorry all livingspaces are currently fully occupied, adding to unallocated..."
                                 Person.unallocated_people.append(self.username)
 
-
                     elif wants_accomodation == 'N':
                         Person.unallocated_people.append(self.username)
 
@@ -173,9 +172,6 @@ class Person(Amity):
             else:
                 return "Snap! please try again"
 
-        def allocate_people(self):
-            pass
-
         def reallocate_person(self, person_id, room_name):
             """
             Reallocates a person to a new room
@@ -194,7 +190,6 @@ class Person(Amity):
 
             # start office allocation, if room is an office
             if room_name in Room.offices:
-
                 for key in Room.total_rooms.keys():
                     if key == room_name:
                         if len(Room.total_rooms[room_name]) < 6:
@@ -233,16 +228,7 @@ class Person(Amity):
                             print "Allocation to New livingSpace successful!"
 
             else:
-                print ('Living Space : %s ' % Room.livingspaces)
-                print ('Office Space : %s ' % Room.offices)
                 return  room_name  + '  was not  Allocated '
-
-        def remove_person_from_room(self):
-            for room in Room.total_rooms.keys():
-                if room not in Room.offices and person_id in Room.total_rooms[room]:
-                    Room.total_rooms[room].remove(person_id)
-                    return True
-            return 'Failed To Delete person'
 
         def load_people_data(self, filename):
             """

@@ -4,5 +4,7 @@ omit=
     *site-packages/*
     *site-packages/nose/*
     *tests/*
+    *App/amity.py*
+    *App/__init__.py*
 [html]
 directory = coverage_html

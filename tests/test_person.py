@@ -22,7 +22,6 @@ class TestPerson(unittest.TestCase):
                 self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
                 self.person.add_person('Michael', 'Kamau', 'Fellow', 'Y')
                 total_after = len(self.person.total_people)
-                print self.person.total_people
                 self.assertEqual((total_after - total_before), 2)
 
         def test_reallocation(self):

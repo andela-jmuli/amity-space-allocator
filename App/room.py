@@ -34,6 +34,9 @@ class Room(Amity):
         This method creates rooms based on the input provided ~ multiple arguments suggest multiple rooms created
                 """
                 # first checks length of args(number of room names provided)
+                for item in args:
+                    if item in Room.total_rooms:
+                        return "A room with that name already exists!"
                 if len(args) >= 1:
                         new_rooms = []
                         for items in args:
@@ -74,7 +77,7 @@ class Room(Amity):
 
                 # first checks whether room exists in total_rooms list
                 if room_name not in Room.total_rooms:
-                        return "The room doesn't exist"
+                    return "The room doesn't exist"
 
                 # appends room to office list if type defined == office
                 if room_type == 'Office':
