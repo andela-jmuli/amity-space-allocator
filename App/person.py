@@ -46,87 +46,86 @@ class Person(Amity):
             self.job_type = job_type
             self.wants_accomodation = wants_accomodation
             self.username = first_name + last_name
-            # add new person to the total people list with a new ID
 
-            # add new person to the total people list with a new ID
             total_ids = len(Person.total_people)
             new_person_id = total_ids + 1
             self.person_id = new_person_id
 
             # Append the user to the people dictionary
-            Person.total_people[new_person_id] = self.username
+            if self.username not in Person.total_people.values():
+                Person.total_people[new_person_id] = self.username
 
-            # check the person's job type
-            if job_type == 'Fellow' or job_type == 'FELLOW' or job_type == 'fellow':
-                Person.fellows.append(self.username)
+                # check the person's job type
+                if job_type == 'Fellow' or job_type == 'FELLOW' or job_type == 'fellow':
+                    Person.fellows.append(self.username)
 
-                # check if offices are available
-                if len(Room.offices) <= 0:
+                    # check if offices are available
+                    if len(Room.offices) <= 0:
 
-                    Person.fellows_not_allocated_office.append(self.username)
-                    print "There are no offices available, adding to unallocated-without-offices..."
-                else:
-                    # allocate an office to the new fellow
+                        Person.fellows_not_allocated_office.append(self.username)
+                        print "There are no offices available, adding to unallocated-without-offices..."
+                    else:
+                        # allocate an office to the new fellow
+                        offices_with_spaces = []
+                        for office in Room.offices:
+                            if len(Room.total_rooms[office]) < 6:
+                                offices_with_spaces.append(office)
+                        try:
+
+                            allocated_office = random.choice(offices_with_spaces)
+                            Room.total_rooms[allocated_office].append(self.person_id)
+
+                        except Exception:
+                            print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
+                            Person.fellows_not_allocated_office.append(self.username)
+
+                    if wants_accomodation == 'Y':
+                        # sanity check for empty list
+                        if len(Room.livingspaces) <= 0:
+                            return "There are currently no livingspaces"
+                        else:
+                            livingspaces_with_spaces = []
+                            for livingspace in Room.livingspaces:
+                                if len(Room.total_rooms[livingspace]) < 4:
+                                    livingspaces_with_spaces.append(livingspace)
+
+                            try:
+                                # allocate a random livingspace
+                                allocated_livingspace = random.choice(livingspaces_with_spaces)
+                                # allocate the new person as an occupant of the livingspace
+                                Room.total_rooms[allocated_livingspace].append(self.person_id)
+
+                            except Exception:
+                                return "sorry all livingspaces are currently fully occupied, adding to unallocated..."
+                                Person.unallocated_people.append(self.username)
+
+
+                    elif wants_accomodation == 'N':
+                        Person.unallocated_people.append(self.username)
+
+                elif job_type == 'Staff' or job_type == 'STAFF' or job_type == 'staff':
+
+                    Person.staff.append(self.username)
                     offices_with_spaces = []
                     for office in Room.offices:
                         if len(Room.total_rooms[office]) < 6:
                             offices_with_spaces.append(office)
                     try:
+
                         allocated_office = random.choice(offices_with_spaces)
-
-                        if len(Room.total_rooms[allocated_office]) < 6:
-                            Room.total_rooms[allocated_office].append(self.person_id)
-                        else:
-                            Person.fellows_not_allocated_office.append(self.username)
-
-                    except Exception:
-                        print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
-                        Person.fellows_not_allocated_office.append(self.username)
-
-                if wants_accomodation == 'Y':
-                    # sanity check for empty list
-                    if len(Room.livingspaces) <= 0:
-                        return "There are currently no livingspaces"
-                    else:
-                        # allocate a random livingspace
-                        allocated_livingspace = random.choice(Room.livingspaces)
-
-                        # allocate the new person as an occupant of the livingspace
-                        if len(Room.total_rooms[allocated_livingspace]) < 4:
-                            Room.total_rooms[allocated_livingspace].append(self.person_id)
-
-                        else:
-                            Person.unallocated_people.append(self.username)
-                            return "sorry all livingspaces are currently fully occupied, adding to unallocated..."
-
-
-                elif wants_accomodation == 'N':
-                    Person.unallocated_people.append(self.username)
-
-            elif job_type == 'Staff' or job_type == 'STAFF' or job_type == 'staff':
-
-                Person.staff.append(self.username)
-                offices_with_spaces = []
-                for office in Room.offices:
-                    if len(Room.total_rooms[office]) < 6:
-                        offices_with_spaces.append(office)
-                try:
-                    allocated_office = random.choice(offices_with_spaces)
-
-                    if len(Room.total_rooms[allocated_office]) < 6:
                         Room.total_rooms[allocated_office].append(self.person_id)
 
-                    else:
+                    except Exception:
+                        print "sorry all offices are currently fully occupied, adding to staff-unallocated-without-offices..."
                         Person.staff_not_allocated_office.append(self.username)
 
-                except Exception:
-                    print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
-                    Person.staff_not_allocated_office.append(self.username)
-
-                if wants_accomodation == 'Y':
-                    return "Staff members are not allocated livingspaces"
-                else:
-                    return "Staff member added successfully"
+                    if wants_accomodation == 'Y':
+                        print "Staff member added successfully"
+                        return "NOTE: Staff members are not allocated livingspaces"
+                    else:
+                        return "Staff member added successfully"
+            else:
+                return "oops! Someone with the username {0} already exists".format(self.username)
 
         def print_unallocated(self, filename=None):
             """
