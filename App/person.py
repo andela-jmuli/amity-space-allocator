@@ -1,12 +1,21 @@
-from amity import Amity
-from room import Room
+import os
 
+from amity import Amity
+# import database
+from models import AmityPerson
+from models import AmityRoom
+from room import Room
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from collections import defaultdict
 from random import randint
-
-import os
 import pickle
 import random
+
+engine = create_engine('sqlite:///amity.db', echo = False)
+Session = sessionmaker()
+Session.configure(bind=engine)
+session = Session()
 
 
 class Person(Amity):
@@ -14,11 +23,14 @@ class Person(Amity):
                 Person defines the main attributes and methods common
                 to both Fellow and Class
          """
+
         total_people = {}
         staff = []
         unallocated_people = []
         allocated_people = []
         fellows = []
+        fellows_not_allocated_office = []
+        staff_not_allocated_office = []
 
         def __init__(self):
             super(Amity, self).__init__()
@@ -33,86 +45,136 @@ class Person(Amity):
             self.last_name = last_name
             self.job_type = job_type
             self.wants_accomodation = wants_accomodation
-
             self.username = first_name + last_name
-            # add new person to the total people list with a new ID
 
             total_ids = len(Person.total_people)
             new_person_id = total_ids + 1
             self.person_id = new_person_id
 
-            Person.total_people[new_person_id] = self.username
+            # Append the user to the people dictionary
+            if self.username not in Person.total_people.values():
+                Person.total_people[new_person_id] = self.username
 
-            # check the person's job type
-            if job_type == 'Fellow':
-                Person.fellows.append(self.username)
+                # check the person's job type
+                if job_type == 'Fellow' or job_type == 'FELLOW' or job_type == 'fellow':
+                    Person.fellows.append(self.username)
 
-                # sanity check for empty list errors
-                if len(Room.offices) > 0:
-                    # allocate an office to the new fellow
-                    allocated_office = random.choice(Room.offices)
-                    # allocate the new person as an occupant of selected room
-                    # Room.total_rooms = defaultdict(list)
-                    for key in Room.total_rooms.keys():
+                    # check if offices are available
+                    if len(Room.offices) <= 0:
 
-                        if key == allocated_office:
-                            if len(Room.total_rooms[key]) == 6:
-                                return "The office is currently fully occupied"
-                            else:
-                                Room.total_rooms[key].append(self.person_id)
-                                # print Room.total_rooms[key]
-
-                else:
-                    return "There are currently no offices"
-
-
-                if wants_accomodation == 'Y':
-                    # sanity check for empty list
-                    if len(Room.livingspaces) > 1:
-                        # allocate a random livingspace
-                        allocated_livingspace = random.choice(Room.livingspaces)
-
-                        # allocate the new person as an occupant of the livingspace
-                        Room.total_rooms = defaultdict(list)
-                        for key in Room.total_rooms.keys():
-                            if key == allocated_livingspace:
-                                if len(Room.total_rooms[key]) == 4:
-                                    return "The livingspace is curently fully occupied"
-                                else:
-                                    Room.total_rooms[key].append(self.person_id)
-
+                        Person.fellows_not_allocated_office.append(self.username)
+                        print "There are no offices available, adding to unallocated-without-offices..."
                     else:
-                        return "There are currently no livingspaces"
+                        # allocate an office to the new fellow
+                        offices_with_spaces = []
+                        for office in Room.offices:
+                            if len(Room.total_rooms[office]) < 6:
+                                offices_with_spaces.append(office)
+                        try:
 
-                elif wants_accomodation == 'N':
-                    Person.unallocated_people.append(self.username)
+                            allocated_office = random.choice(offices_with_spaces)
+                            Room.total_rooms[allocated_office].append(self.person_id)
+
+                        except Exception:
+                            print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
+                            Person.fellows_not_allocated_office.append(self.username)
+
+                    if wants_accomodation == 'Y':
+                        # sanity check for empty list
+                        if len(Room.livingspaces) <= 0:
+                            return "There are currently no livingspaces"
+                        else:
+                            livingspaces_with_spaces = []
+                            for livingspace in Room.livingspaces:
+                                if len(Room.total_rooms[livingspace]) < 4:
+                                    livingspaces_with_spaces.append(livingspace)
+
+                            try:
+                                # allocate a random livingspace
+                                allocated_livingspace = random.choice(livingspaces_with_spaces)
+                                # allocate the new person as an occupant of the livingspace
+                                Room.total_rooms[allocated_livingspace].append(self.person_id)
+
+                            except Exception:
+                                return "sorry all livingspaces are currently fully occupied, adding to unallocated..."
+                                Person.unallocated_people.append(self.username)
 
 
-            elif job_type == 'Staff':
+                    elif wants_accomodation == 'N':
+                        Person.unallocated_people.append(self.username)
 
-                Person.staff.append(self.username)
-                allocated_office = random.choice(Room.offices)
+                elif job_type == 'Staff' or job_type == 'STAFF' or job_type == 'staff':
 
-                Room.total_rooms = defaultdict(list)
-                for key, occupant in Room.total_rooms:
-                    if key == allocated_office:
-                        Room.total_rooms[key].append(self.person_id)
+                    Person.staff.append(self.username)
+                    offices_with_spaces = []
+                    for office in Room.offices:
+                        if len(Room.total_rooms[office]) < 6:
+                            offices_with_spaces.append(office)
+                    try:
 
-                if wants_accomodation == 'Y':
-                    return "Staff members are not allocated livingspaces"
+                        allocated_office = random.choice(offices_with_spaces)
+                        Room.total_rooms[allocated_office].append(self.person_id)
 
-        def print_unallocated(self, filename, *args):
+                    except Exception:
+                        print "sorry all offices are currently fully occupied, adding to staff-unallocated-without-offices..."
+                        Person.staff_not_allocated_office.append(self.username)
+
+                    if wants_accomodation == 'Y':
+                        print "Staff member added successfully"
+                        return "NOTE: Staff members are not allocated livingspaces"
+                    else:
+                        return "Staff member added successfully"
+            else:
+                return "oops! Someone with the username {0} already exists".format(self.username)
+
+        def print_unallocated(self, filename=None):
             """
             prints out unallocated people to a specified file
             """
-            # if file output option specified in arguments, write to file
-            if '-o' in args:
-                with open(unallocated, 'wb') as f:
-                    pickle.dump(Person.unallocated_people, f)
-            # if file output option not specified, write to screen(console)
+            print "A for fellows without living spaces"
+            print "B for fellows without offices"
+            print "C for staff members without offices"
+            choice = raw_input ("What would you like to print?")
+
+            if choice == 'A':
+                if filename is not None:
+                    with open(filename, 'w') as f:
+                        for person in Person.unallocated_people:
+                            f.write(person)
+                else:
+                    for person in Person.unallocated_people:
+                        if len(Person.unallocated_people) > 0:
+                            print person
+                        else:
+                            return "All fellows are currently allocated"
+
+            elif choice == 'B':
+                if filename is not None:
+                    with open(filename, 'w') as f:
+                        for person in Person.fellows_not_allocated_office:
+                            f.write(person)
+                else:
+                    for person in Person.fellows_not_allocated_office:
+                        if len(Person.fellows_not_allocated_office) > 0:
+                            print person
+                        else:
+                            return "All fellows have working spaces"
+
+            elif choice == 'C':
+                if filename is not None:
+                    with open(filename, 'w') as f:
+                        f.write(str(Person.staff_not_allocated_office))
+                else:
+                    for person in Person.staff_not_allocated_office:
+                        if len(Person.staff_not_allocated_office) > 0:
+                            print person
+                        else:
+                            return "All staff members have working spaces"
             else:
-                for person in Person.unallocated_people:
-                    print person
+                return "Snap! please try again"
+
+        def allocate_people(self):
+            pass
 
         def reallocate_person(self, person_id, room_name):
             """
@@ -124,45 +186,65 @@ class Person(Amity):
 
             # check for the room's existance
             if room_name not in Room.total_rooms.keys():
-                return "The room either desn't exist or is not allocated!"
+                return "The room doesn't exist!"
 
             # check whether the person is already in the allocated room
-            for room in Room.total_rooms.iteritems():
-                if room == room_name:
-                    for occupant in Room.total_rooms[room_name]:
-                        if person_id == occupant:
-                            return "The Person is already allocated in the requested room"
-
-            # remove person in the already allocated room
-            for room in Room.total_rooms.keys():
-                for occupant in Room.total_rooms[room]:
-                    if person_id == occupant:
-                        Room.total_rooms[room].remove(person_id)
+            if person_id in Room.total_rooms[room_name]:
+                return "The Person is already allocated in the requested room"
 
             # start office allocation, if room is an office
             if room_name in Room.offices:
 
                 for key in Room.total_rooms.keys():
                     if key == room_name:
-                        if len(Room.total_rooms[key]) == 6:
-                            return "Sorry the office is occupied fully"
+                        if len(Room.total_rooms[room_name]) < 6:
+                            Room.total_rooms[room_name].append(person_id)
                         else:
-                            Room.total_rooms[key].append(person_id)
-                            print "Allocation to New office successfull!"
+                            return "Sorry the office is occupied fully"
 
-            # start livingspace allocation if room is a livingspace
+                for room in Room.total_rooms.keys():
+                    if room != room_name and room not in Room.livingspaces:
+                        for occupant in Room.total_rooms[room]:
+                            if person_id == occupant:
+                                Room.total_rooms[room].remove(person_id)
+                                print "Allocation to New office successfull!"
+
+            # start livingspace re-allocation if room is a livingspace
             elif room_name in Room.livingspaces:
+                for id in Person.total_people:
+                    if person_id == Person.total_people[id]:
+                        username = username
+                        if username in Person.staff:
+                            return "Staff members are not allocated living spaces"
 
-                for key in Room.total_rooms.iteritems():
+                for key in Room.total_rooms.keys():
                     if key == room_name:
-                        if len(Room.total_rooms[key]) == 4:
+                        if len(Room.total_rooms[room_name]) > 4:
                             return "Sorry the LivingSpace is currently fully occupied!"
                         else:
-                            Room.total_rooms[key].append(person_id)
+                            Room.total_rooms[room_name].append(person_id)
+                            # print "Allocation to New livingSpace successful!"
+
+
+                for room in Room.total_rooms.keys():
+                    if room != room_name and room not in Room.offices:
+                        if person_id in Room.total_rooms[room]:
+                            Room.total_rooms[room].remove(person_id)
                             print "Allocation to New livingSpace successful!"
 
+            else:
+                print ('Living Space : %s ' % Room.livingspaces)
+                print ('Office Space : %s ' % Room.offices)
+                return  room_name  + '  was not  Allocated '
 
-        def load_people(self, filename):
+        def remove_person_from_room(self):
+            for room in Room.total_rooms.keys():
+                if room not in Room.offices and person_id in Room.total_rooms[room]:
+                    Room.total_rooms[room].remove(person_id)
+                    return True
+            return 'Failed To Delete person'
+
+        def load_people_data(self, filename):
             """
             Adds people to rooms from a text file
             """
@@ -178,19 +260,134 @@ class Person(Amity):
                         return "The file is empty"
                     else:
                         for line in content:
+                            # line = line[:line]
                             person_data = line.split()
                             first_name = person_data[0]
                             last_name = person_data[1]
                             job_type = person_data[2]
                             try:
                                 accomodation = person_data[3]
-                            except:
-                                # by default if not specified
-                                wants_accommodation = 'N'
+                            except Exception:
+                                accomodation = 'N'
                             person = Person()
                             person.add_person(first_name, last_name, job_type, accomodation)
 
                         return "File data added successfully"
             else:
                 return "The file doesn't exist"
+
+        @staticmethod
+        def commit_people(db_name):
+            """
+            method called to commit person objects to database class
+            """
+            global engine
+            engine = create_engine('sqlite:///'+db_name, echo = False)
+            Session = sessionmaker()
+            Session.configure(bind=engine)
+            session = Session()
+            for key in Person.total_people.keys():
+                person_id = key
+                username = Person.total_people[key]
+                if username in Person.fellows:
+                    job_type = 'fellow'
+                    # check whether person has an office
+                    if username in Person.fellows_not_allocated_office:
+                        allocated_office = 'unallocated'
+                    else:
+                        for room in Room.total_rooms:
+                            if room in Room.offices:
+                                for occupant in Room.total_rooms[room]:
+                                    if person_id == occupant:
+                                        allocated_office = room
+
+                    # check whether fellow has a living space
+                    if username in Person.unallocated_people:
+                        is_accomodated = False
+                        allocated_livingspace = 'unallocated'
+                    else:
+                        is_accomodated = True
+                        for room in Room.total_rooms:
+                            if room in Room.livingspaces:
+                                for occupant in Room.total_rooms[room]:
+                                    if person_id == occupant:
+                                        allocated_livingspace = room
+
+                # if the person is a staff...
+                elif username in Person.staff:
+                    job_type = 'staff'
+                    allocated_livingspace = 'unallocated'
+                    if username in Person.staff_not_allocated_office:
+                        is_accomodated = False
+                        allocated_office = 'unallocated'
+                    else:
+                        for room in Room.total_rooms:
+                            if room in Room.offices:
+                                for occupant in Room.total_rooms[room]:
+                                    if person_id == occupant:
+                                        allocated_office = room
+                # commit person data as an object of AmityPerson class (database table for Person)
+                person_info = AmityPerson(person_id=person_id, username=username, job_type=job_type, is_accomodated=is_accomodated, allocated_livingspace=allocated_livingspace, allocated_office=allocated_office)
+                try:
+                    session.add(person_info)
+                    session.commit()
+                    session.close()
+                except Exception:
+                    return "person data save not successful"
+
+        @staticmethod
+        def load_people(db_name):
+            """
+            method called to load person data from database tables to respective data structures
+            """
+            global engine
+            engine = create_engine('sqlite:///'+db_name, echo = False)
+            Session = sessionmaker()
+            Session.configure(bind=engine)
+            session = Session()
+            all_people = session.query(AmityPerson).all()
+            all_fellows = session.query(AmityPerson).filter_by(job_type="fellow")
+            all_staff = session.query(AmityPerson).filter_by(job_type="staff")
+            all_unallocated = session.query(AmityPerson).filter_by(is_accomodated="0")
+            rooms = session.query(AmityRoom).all()
+
+            # Adds people to the people dictionary
+            for person in all_people:
+                username = str(person.username)
+                id = int(person.person_id)
+                Person.total_people[id] = username
+
+            # get the fellows
+            for person in all_fellows:
+                username = str(person.username)
+                Person.fellows.append(username)
+
+            # get the staff
+            for person in all_staff:
+                username = str(person.username)
+                Person.staff.append(username)
+
+            # get unallocated
+            for person in all_unallocated:
+                username = str(person.username)
+                Person.unallocated_people.append(username)
+
+            # start allocations
+            for room in rooms:
+                room_name = str(room.room_name)
+                room_type = str(room.room_type)
+                if room_type == 'office':
+                    for person in all_people:
+                        username = str(person.username)
+                        id = int(person.person_id)
+                        if person.allocated_office == room_name:
+                            Room.total_rooms[room_name].append(id)
+                elif room_type == 'livingspace':
+                    for person in all_people:
+                        username = str(person.username)
+                        id = int(person.person_id)
+                        if person.allocated_livingspace == room_name:
+                            Room.total_rooms[room_name].append(id)
+
+            return "People loaded successfully"
 

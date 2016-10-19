@@ -1,5 +1,5 @@
 import os
-from models import Room
+from models import AmityRoom
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -7,7 +7,12 @@ from sqlalchemy.orm import sessionmaker
 
 from amity import Amity
 import person
+import database
 
+engine = create_engine('sqlite:///amity.db', echo = False)
+Session = sessionmaker()
+Session.configure(bind=engine)
+session = Session()
 
 class Room(Amity):
         """ Room class subclasses Amity and is super to Office and LIvingSpace
@@ -16,6 +21,8 @@ class Room(Amity):
         total_rooms = {}
         offices = []
         livingspaces = []
+
+
 
         def __init__(self, offices=offices, total_rooms=total_rooms):
                 super(Amity, self).__init__()
@@ -51,12 +58,14 @@ class Room(Amity):
                         # loop through rooms and identify
                         if rm == room_name:
                                 # check number of occupants
-                                occupants =  Room.total_rooms.values()
-                                if occupants > 1:
-                                        for p in occupants:
-                                                print p
+                                if len(Room.total_rooms[rm]) < 1:
+                                        return "There are currently no occupants in {0}".format(rm)
                                 else:
-                                        print "The room is empty!"
+                                    for occupant in Room.total_rooms[room_name]:
+                                        for person_id in person.Person.total_people:
+                                            if person_id == occupant:
+                                                occupant_name = person.Person.total_people[person_id]
+                                                print occupant_name
 
         def allocate_room_type(self, room_name, room_type):
                 """
@@ -83,18 +92,70 @@ class Room(Amity):
 
                 # loop through all rooms
                 print "Room Allocation Data:"
-                print '--------------------------------------'
+                print '**********************'
+                print " ID ----- Person Name"
+                print '                                  '
                 for room in Room.total_rooms.keys():
-                        room_name = '{0}'.format(room)
-                        print room_name
+                        if room in Room.offices:
+                            print '### ### {0} office occupants ######'.format(room)
+                        else:
+                            print '###### {0} living space occupants ######'.format(room)
+                        if len(Room.total_rooms[room]) < 1:
+                            print '------------------------------------------------------------------------'
+                            print "There are currently no occupants in {0}".format(room)
+                        else:
+                            for occupant in Room.total_rooms[room]:
+                                for person_id in person.Person.total_people.keys():
+                                    if occupant == person_id:
+                                            person_name = person.Person.total_people[person_id]
+                                            if person_name in person.Person.fellows:
+                                                print "{0}, F ----- {1}".format(person_id, person_name)
+                                            elif person_name in person.Person.staff:
+                                                print "{0}, S ----- {1}".format(person_id, person_name)
 
-                        print '----------- {0} Occupants--------------'.format(room_name)
-                        for occupant, person_id in zip(Room.total_rooms[room], person.Person.total_people.keys()):
-                                if occupant == person_id:
-                                        person_name = person.Person.total_people[person_id]
-                                        print person_name
+        @staticmethod
+        def commit_rooms(db_name):
+                """
+        Loads rooms from the total_rooms dictionary and commits to database
+                """
+                # loop through all rooms dictionary and get room names which are the keys
+                global engine
+                engine = create_engine('sqlite:///'+db_name, echo = False)
+                Session = sessionmaker()
+                Session.configure(bind=engine)
+                session = Session()
+                for room in Room.total_rooms.keys():
+                    room_name = room
+                    #  check for room type and capacity
+                    if room in Room.offices:
+                        room_type = 'office'
+                        room_capacity = 6
+                    elif room in Room.livingspaces:
+                        room_type = 'livingspace'
+                        room_capacity = 4
+                    amity_room = AmityRoom(room_name=room_name, room_type=room_type, capacity=room_capacity)
 
-                if '-o' in args:
-                        with open('allocations', 'wb') as f:
-                                # write data as output
-                                write_allocations = f.write(data)
+                    try:
+                        session.add(amity_room)
+                        session.commit()
+                        session.close()
+                    except Exception:
+                        return "room data save Failed!"
+        @staticmethod
+        def load_rooms(db_name):
+            global engine
+            engine = create_engine('sqlite:///'+db_name, echo = False)
+            Session = sessionmaker()
+            Session.configure(bind=engine)
+            session = Session()
+            all_rooms = session.query(AmityRoom).all()
+
+            for room in all_rooms:
+                room_name = str(room.room_name)
+                room_type = str(room.room_type)
+                if "office" in str(room.room_type) :
+                    Room.offices.append(room_name)
+                else:
+                    Room.livingspaces.append(room_name)
+                Room.total_rooms[room_name] = []
+            return 'Room data added successfully'
