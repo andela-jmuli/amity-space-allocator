@@ -67,13 +67,21 @@ class Person(Amity):
                     print "There are no offices available, adding to unallocated-without-offices..."
                 else:
                     # allocate an office to the new fellow
-                    allocated_office = random.choice(Room.offices)
+                    offices_with_spaces = []
+                    for office in Room.offices:
+                        if len(Room.total_rooms[office]) < 6:
+                            offices_with_spaces.append(office)
+                    try:
+                        allocated_office = random.choice(offices_with_spaces)
 
-                    if len(Room.total_rooms[allocated_office]) < 6:
-                        Room.total_rooms[allocated_office].append(self.person_id)
-                    else:
+                        if len(Room.total_rooms[allocated_office]) < 6:
+                            Room.total_rooms[allocated_office].append(self.person_id)
+                        else:
+                            Person.fellows_not_allocated_office.append(self.username)
+
+                    except Exception:
+                        print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
                         Person.fellows_not_allocated_office.append(self.username)
-                        return "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
 
                 if wants_accomodation == 'Y':
                     # sanity check for empty list
@@ -98,58 +106,76 @@ class Person(Amity):
             elif job_type == 'Staff' or job_type == 'STAFF' or job_type == 'staff':
 
                 Person.staff.append(self.username)
-                allocated_office = random.choice(Room.offices)
+                offices_with_spaces = []
+                for office in Room.offices:
+                    if len(Room.total_rooms[office]) < 6:
+                        offices_with_spaces.append(office)
+                try:
+                    allocated_office = random.choice(offices_with_spaces)
 
-                if len(Room.total_rooms[allocated_office]) < 6:
-                    Room.total_rooms[allocated_office].append(self.person_id)
+                    if len(Room.total_rooms[allocated_office]) < 6:
+                        Room.total_rooms[allocated_office].append(self.person_id)
 
-                else:
-                    Person.staff_not_allocated_office.append(self.username)
+                    else:
+                        Person.staff_not_allocated_office.append(self.username)
+
+                except Exception:
                     print "sorry all offices are currently fully occupied, adding to unallocated-without-offices..."
+                    Person.staff_not_allocated_office.append(self.username)
 
                 if wants_accomodation == 'Y':
                     return "Staff members are not allocated livingspaces"
                 else:
                     return "Staff member added successfully"
 
-        def print_unallocated(self, *args):
+        def print_unallocated(self, filename=None):
             """
             prints out unallocated people to a specified file
             """
+            print "A for fellows without living spaces"
+            print "B for fellows without offices"
+            print "C for staff members without offices"
+            choice = raw_input ("What would you like to print?")
 
-            # if file output option specified in arguments, write to file
-            if '-o' in args:
-                with open(unallocated, 'wb') as f:
-                    pickle.dump(Person.unallocated_people, f)
-            # if file output option not specified, write to screen(console)
-            else:
-                print "A for fellows without living spaces"
-                print "B for fellows without offices"
-                print "C for staff members without offices"
-                choice = raw_input ("What would you like to print?")
-
-                if choice == 'A':
+            if choice == 'A':
+                if filename is not None:
+                    with open(filename, 'w') as f:
+                        for person in Person.unallocated_people:
+                            f.write(person)
+                else:
                     for person in Person.unallocated_people:
                         if len(Person.unallocated_people) > 0:
                             print person
                         else:
                             return "All fellows are currently allocated"
 
-                elif choice == 'B':
+            elif choice == 'B':
+                if filename is not None:
+                    with open(filename, 'w') as f:
+                        for person in Person.fellows_not_allocated_office:
+                            f.write(person)
+                else:
                     for person in Person.fellows_not_allocated_office:
                         if len(Person.fellows_not_allocated_office) > 0:
                             print person
                         else:
                             return "All fellows have working spaces"
 
-                elif choice == 'C':
+            elif choice == 'C':
+                if filename is not None:
+                    with open(filename, 'w') as f:
+                        f.write(str(Person.staff_not_allocated_office))
+                else:
                     for person in Person.staff_not_allocated_office:
                         if len(Person.staff_not_allocated_office) > 0:
                             print person
                         else:
                             return "All staff members have working spaces"
-                else:
-                    return "Snap! please try again"
+            else:
+                return "Snap! please try again"
+
+        def allocate_people(self):
+            pass
 
         def reallocate_person(self, person_id, room_name):
             """
@@ -218,7 +244,6 @@ class Person(Amity):
                     Room.total_rooms[room].remove(person_id)
                     return True
             return 'Failed To Delete person'
-                            # print "Allocation to New livingSpace successful!"
 
         def load_people_data(self, filename):
             """
