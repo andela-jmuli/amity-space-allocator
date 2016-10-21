@@ -7,6 +7,12 @@ Amity Space Allocator is a console application that allocates rooms to fellows a
 
 ## Dependencies:
 
+1. [Docopt](http://docopt.org/)
+2. [SQLAlchemy](http://www.sqlalchemy.org/)
+3. [Python Mock lib](https://docs.python.org/3/library/unittest.mock.html)
+4. [Python 2.7](https://www.python.org/)
+
+
 ## Installation and Setup:
 
 * Navigate to your directory choice
@@ -53,6 +59,7 @@ Loads data from a database into the application.
 To test, run the command ``` nosetests ```
 
 ## Licence:
+Check out the License file for more information
 
 ## Credits:
 * [Joseph Muli](github.com/andela-jmuli)
