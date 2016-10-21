@@ -28,7 +28,10 @@ Amity Space Allocator is a console application that allocates rooms to fellows a
 
 ## Usage:
 ***create_room*** ```<room_name>```
-Creates rooms in Amity. Using this command I should be able to create as many rooms as possible by specifying multiple room names after the create_room command.
+Creates rooms in Amity. This command creates as many rooms as possible by specifying multiple room names after the create_room command.
+
+***allocate_room_type*** ```<room_name> <Office| LivingSpace>```
+Assign a room type, can be an office or livingspace, failure to which rooms will not accept allocations.  
 
 ***add_person*** ```<person_name> <FELLOW|STAFF> [wants_accommodation]```
 Adds a person to the system and allocates the person to a random room. wants_accommodation here is an optional argument which can be either Yes or No. The default value if it is not provided is No.
