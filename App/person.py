@@ -82,6 +82,7 @@ class Person(Amity):
                     if wants_accomodation == 'Y':
                         # sanity check for empty list
                         if len(Room.livingspaces) <= 0:
+                            Person.unallocated_people.append(self.username)
                             return "There are currently no livingspaces"
                         else:
                             livingspaces_with_spaces = []
