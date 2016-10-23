@@ -68,7 +68,7 @@ def intro():
     print('To get started, enter "help" to view the available commands')
 
 
-class Amitizer(cmd.Cmd):
+class Allocator(cmd.Cmd):
     prompt = 'allocator@amity ~ '
 
     @docopt_cmd
@@ -162,4 +162,4 @@ class Amitizer(cmd.Cmd):
 
 if __name__ == "__main__":
     intro()
-    Amitizer().cmdloop()
+    Allocator().cmdloop()

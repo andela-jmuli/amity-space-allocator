@@ -7,9 +7,6 @@ from models import AmityRoom
 from room import Room
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from collections import defaultdict
-from random import randint
-import pickle
 import random
 
 engine = create_engine('sqlite:///amity.db', echo = False)
@@ -193,7 +190,7 @@ class Person(Amity):
             if room_name in Room.offices:
                 for key in Room.total_rooms.keys():
                     if key == room_name:
-                        if len(Room.total_rooms[room_name]) < 6:
+                        if len(Room.total_rooms[room_nareturnme]) < 6:
                             Room.total_rooms[room_name].append(person_id)
                         else:
                             return "Sorry the office is occupied fully"
@@ -203,6 +200,10 @@ class Person(Amity):
                         for occupant in Room.total_rooms[room]:
                             if person_id == occupant:
                                 Room.total_rooms[room].remove(person_id)
+                                for person in Person.total_people:
+                                    if person_id == person_id:
+                                        person_name = person_name
+                                        Room.staff_not_allocated_office.remove(person_name)
                                 print "Allocation to New office successfull!"
 
             # start livingspace re-allocation if room is a livingspace
@@ -334,6 +335,9 @@ class Person(Amity):
             session = Session()
             all_people = session.query(AmityPerson).all()
             all_fellows = session.query(AmityPerson).filter_by(job_type="fellow")
+            fellows_without_livingspaces = session.query(AmityPerson).filter_by(allocated_livingspace="unallocated").filter_by(job_type="fellow")
+            fellows_without_offices = session.query(AmityPerson).filter_by(allocated_office="unallocated").filter_by(job_type="fellow")
+            staff_without_offices = session.query(AmityPerson).filter_by(allocated_office="unallocated").filter_by(job_type="staff")
             all_staff = session.query(AmityPerson).filter_by(job_type="staff")
             all_unallocated = session.query(AmityPerson).filter_by(is_accomodated="0")
             rooms = session.query(AmityRoom).all()
@@ -354,10 +358,20 @@ class Person(Amity):
                 username = str(person.username)
                 Person.staff.append(username)
 
-            # get unallocated
-            for person in all_unallocated:
+            # get fellows not allocated offices
+            for person in fellows_without_offices:
+                username = str(person.username)
+                Person.fellows_not_allocated_office.append(username)
+
+            # get fellows not allocated livingspaces
+            for person in fellows_without_livingspaces:
                 username = str(person.username)
                 Person.unallocated_people.append(username)
+
+            # get staff members without offices
+            for person in staff_without_offices:
+                username = str(person.username)
+                Person.staff_not_allocated_office.append(username)
 
             # start allocations
             for room in rooms:
