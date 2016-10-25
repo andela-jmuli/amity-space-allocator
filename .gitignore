@@ -2,3 +2,4 @@ cp-env/
 *.pyc
 *.swp
 *.db
+.coverage
