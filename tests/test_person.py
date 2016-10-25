@@ -6,12 +6,14 @@ from App.room import Room
 from mock import mock_open, patch
 from StringIO import StringIO
 import sys
+from App.models import create_db
 
 class TestPerson(unittest.TestCase):
 
         def setUp(self):
                 self.person = Person()
                 sys.stdout = StringIO()
+                self.room = Room()
 
         def test_person_class_instance(self):
                 self.assertIsInstance(self.person, Person)
@@ -33,8 +35,14 @@ class TestPerson(unittest.TestCase):
                 already_present = self.person.add_person('Migwi', 'Ndungu', 'Fellow', 'Y')
                 self.assertEqual(already_present, 'oops! Someone with the username MigwiNdungu already exists')
 
+                no_accomodation = self.person.add_person('Ben', 'Kamau', 'Fellow', 'N')
+                self.assertEqual(no_accomodation, 'BenKamau added to unallocated-people')
+
                 staff_accomodation = self.person.add_person('Michelle', 'Korir', 'Staff', 'Y')
                 self.assertEqual(staff_accomodation, 'NOTE: Staff members are not allocated livingspaces')
+
+                successfull_staff_add = self.person.add_person('Buck', 'Speed', 'Staff', 'N')
+                self.assertEqual(successfull_staff_add, 'Staff member added successfully')
 
         @patch.dict('App.room.Room.total_rooms', {'oculus': [1,2,5,6,9,10], 'narnia': [3,4,7,8,11,12], 'haskel': [1,2,3,4]})
         @patch.dict('App.person.Person.total_people', {1: 'MigwiNdungu', 2: 'JosephMuli', 3: 'Josh', 4: 'Njira', 5:'kevin', 6:'mwangi', 7:'john', 8:'milkah', 9:'noelah', 10:'serah', 11:'sila', 12:'mary'})
@@ -70,17 +78,17 @@ class TestPerson(unittest.TestCase):
                 self.assertEqual(msg, "There are currently no livingspaces")
 
 
-        @patch.dict('App.room.Room.total_rooms', {'oculus': [1], 'mordor': [], 'shire':[23,43,52,12,32,32], 'haskel': []})
-        @patch.dict('App.person.Person.total_people', {1: 'Migwi'})
+        @patch.dict('App.room.Room.total_rooms', {'oculus': [1], 'green':[], 'mordor': [], 'shire':[23,43,52,12,32,32], 'haskel': [], 'python':[1], 'ruby':[], 'blue':[98,75,45,24,76,99]})
+        @patch.dict('App.person.Person.total_people', {1: 'Migwi', 2:'jojo'})
         @patch('App.room.Room.offices')
         @patch('App.room.Room.livingspaces')
         @patch('App.person.Person.fellows')
         @patch('App.person.Person.staff')
         def test_reallocation(self, mock_staff, mock_fellows, mock_livingspaces, mock_offices):
-                mock_livingspaces.__iter__.return_value = ['haskel']
+                mock_livingspaces.__iter__.return_value = ['haskel', 'python', 'ruby', 'blue']
                 mock_offices.__iter__.return_value = ['oculus', 'mordor', 'shire']
                 mock_fellows.__iter__.return_value = ['Migwi']
-                mock_staff.__iter__.return_value = []
+                mock_staff.__iter__.return_value = ['jojo']
 
                 fully_occupied = self.person.reallocate_person(1, 'shire')
                 self.assertEqual(fully_occupied, "Sorry the office is occupied fully")
@@ -97,6 +105,15 @@ class TestPerson(unittest.TestCase):
                 room_msg = self.person.reallocate_person(1, 'shell')
                 self.assertEqual(room_msg, "The room doesn't exist!")
 
+                fellow_reallocate_livingspace = self.person.reallocate_person(1, 'ruby')
+                self.assertEqual(fellow_reallocate_livingspace, "Allocation to New livingSpace successful!")
+
+                fully_occupied_ls = self.person.reallocate_person(1, 'blue')
+                self.assertEqual(fully_occupied_ls, "Sorry the LivingSpace is currently fully occupied!")
+
+                unallocated_room = self.person.reallocate_person(1, 'green')
+                self.assertEqual(unallocated_room, "green  was not  Allocated")
+
         @patch('App.person.Person.add_person')
         def test_loads_people(self, mock_add_person):
                 mock_add_person.return_value = ''
@@ -106,12 +123,27 @@ class TestPerson(unittest.TestCase):
                 # assert open("people.txt", 'r').readlines() == sample_read_text
                 mock_file.assert_called_with("list.txt")
 
+        @patch.dict('App.room.Room.total_rooms', {'oculus': [1], 'mordor': [2], 'python':[1]})
+        @patch.dict('App.person.Person.total_people', {1: 'Migwi', 2:'jojo', 3 : 'jimbo'})
+        @patch('App.room.Room.offices')
+        @patch('App.room.Room.livingspaces')
+        @patch('App.person.Person.fellows')
+        @patch('App.person.Person.staff')
+        @patch('App.person.Person.unallocated_people')
+        @patch('App.person.Person.fellows_not_allocated_office')
+        @patch('App.person.Person.staff_not_allocated_office')
+        def test_commit_people(self, mock_staff_not_allocated_office, mock_fellows_not_allocated_office, mock_unallocated_people,  mock_staff, mock_fellows, mock_livingspaces, mock_offices):
+                mock_livingspaces.__iter__.return_value = ['python']
+                mock_offices.__iter__.return_value = ['oculus', 'mordor']
+                mock_fellows.__iter__.return_value = ['Migwi']
+                mock_fellows.__iter__.return_value = ['jojo']
+                mock_staff_not_allocated_office.__iter__.return_value = ['jimbo']
+                mock_fellows_not_allocated_office.__iter__.return_value = []
+                mock_unallocated_people.__iter__.return_value = []
 
-        def test_printing_unallocated(self):
-                # self.person.print_unallocated('unallocated')
-                # self.assertIsNotNone('unallocated')
-                pass
-
+                # msg = self.room.commit_rooms('elsis.db')
+                msg = self.person.commit_people('elsis.db')
+                self.assertEqual(msg, 'Person data commit successfull')
 
 
 
