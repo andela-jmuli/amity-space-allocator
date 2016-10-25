@@ -1,18 +1,12 @@
-import os
-from models import AmityRoom
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
-
 from amity import Amity
-import person
 import database
+from models import AmityRoom
+import os
+import person
 
-engine = create_engine('sqlite:///amity.db', echo = False)
-Session = sessionmaker()
-Session.configure(bind=engine)
-session = Session()
 
 class Room(Amity):
         """ Room class subclasses Amity and is super to Office and LIvingSpace
@@ -21,8 +15,6 @@ class Room(Amity):
         total_rooms = {}
         offices = []
         livingspaces = []
-
-
 
         def __init__(self, offices=offices, total_rooms=total_rooms):
                 super(Amity, self).__init__()
@@ -35,7 +27,7 @@ class Room(Amity):
                 """
                 # first checks length of args(number of room names provided)
                 for item in args:
-                    if item in Room.total_rooms:
+                    if item in Room.total_rooms.keys():
                         return "A room with that name already exists!"
                 if len(args) >= 1:
                         new_rooms = []
@@ -46,6 +38,7 @@ class Room(Amity):
                                 self.room_name = room
                                 # add new rooms to total rooms dictionary
                                 Room.total_rooms[room]= []
+                        return "Rooms have been successfully created"
                 elif len(args) < 1:
                         return "You can't create an empty room!"
 
@@ -82,10 +75,12 @@ class Room(Amity):
                 # appends room to office list if type defined == office
                 if room_type == 'Office':
                         Room.offices.append(room_name)
+                        return "{0} has been added as an Office".format(room_name)
 
                 # appends room to livingspace if type defined == livingspace
                 elif room_type == 'LivingSpace':
                         Room.livingspaces.append(room_name)
+                        return "{0} has been added as a LivingSpace".format(room_name)
 
         def print_allocations(self, *args):
                 """
@@ -121,29 +116,32 @@ class Room(Amity):
                 """
         Loads rooms from the total_rooms dictionary and commits to database
                 """
-                # loop through all rooms dictionary and get room names which are the keys
                 global engine
                 engine = create_engine('sqlite:///'+db_name, echo = False)
                 Session = sessionmaker()
                 Session.configure(bind=engine)
                 session = Session()
+
+                # loop through all rooms dictionary and get room names which are the keys
                 for room in Room.total_rooms.keys():
                     room_name = room
                     #  check for room type and capacity
-                    if room in Room.offices:
+                    if room in list(Room.offices):
                         room_type = 'office'
                         room_capacity = 6
-                    elif room in Room.livingspaces:
+                    elif room in list(Room.livingspaces):
                         room_type = 'livingspace'
                         room_capacity = 4
+
                     amity_room = AmityRoom(room_name=room_name, room_type=room_type, capacity=room_capacity)
 
-                    try:
-                        session.add(amity_room)
-                        session.commit()
-                        session.close()
-                    except Exception:
-                        return "room data save Failed!"
+
+                    session.add(amity_room)
+                    session.commit()
+                    session.close()
+
+                return "rooms committed to session"
+
         @staticmethod
         def load_rooms(db_name):
             global engine
@@ -151,6 +149,7 @@ class Room(Amity):
             Session = sessionmaker()
             Session.configure(bind=engine)
             session = Session()
+
             all_rooms = session.query(AmityRoom).all()
 
             for room in all_rooms:

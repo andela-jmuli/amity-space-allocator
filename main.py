@@ -28,8 +28,6 @@ from App.person import Person
 from App.room import Room
 from App.database import AmityDatabase
 
-
-
 def docopt_cmd(func):
     """
     This decorator is used to simplify the try/except block and pass the result
@@ -141,18 +139,15 @@ class Allocator(cmd.Cmd):
     def do_save_state(self, arg):
         """Usage: save_state [--db=sqlitedb]"""
         amity = AmityDatabase()
-        db_name = arg['--db']
-        if db_name is not None:
-            amity.save_state(arg['--db'])
-        else:
-            if os.path.exists('amity.db'):
-                amity.save_state('amity.db')
+        db_name = arg['--db'] or 'amity.db'
+        amity.save_state(arg['--db'])
 
     @docopt_cmd
     def do_load_state(self, arg):
         """Usage: load_state <sqlite_database>"""
         amity = AmityDatabase()
-        amity.load_state(arg['<sqlite_database>'])
+        status = amity.load_state(arg['<sqlite_database>'])
+        print(status)
 
     @docopt_cmd
     def do_quit(self, arg):
