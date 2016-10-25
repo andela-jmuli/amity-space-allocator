@@ -13,7 +13,6 @@ class TestPerson(unittest.TestCase):
         def setUp(self):
                 self.person = Person()
                 sys.stdout = StringIO()
-                self.room = Room()
 
         def test_person_class_instance(self):
                 self.assertIsInstance(self.person, Person)
@@ -136,16 +135,34 @@ class TestPerson(unittest.TestCase):
                 mock_livingspaces.__iter__.return_value = ['python']
                 mock_offices.__iter__.return_value = ['oculus', 'mordor']
                 mock_fellows.__iter__.return_value = ['Migwi']
-                mock_fellows.__iter__.return_value = ['jojo']
+                mock_staff.__iter__.return_value = ['jojo', 'jimbo']
                 mock_staff_not_allocated_office.__iter__.return_value = ['jimbo']
                 mock_fellows_not_allocated_office.__iter__.return_value = []
                 mock_unallocated_people.__iter__.return_value = []
 
-                # msg = self.room.commit_rooms('elsis.db')
                 msg = self.person.commit_people('elsis.db')
                 self.assertEqual(msg, 'Person data commit successfull')
 
+        @patch.dict('App.room.Room.total_rooms', {'oculus': [1], 'mordor': [2], 'python':[1]})
+        @patch.dict('App.person.Person.total_people', {1: 'Migwi', 2:'jojo', 3 : 'jimbo'})
+        @patch('App.room.Room.offices')
+        @patch('App.room.Room.livingspaces')
+        @patch('App.person.Person.fellows')
+        @patch('App.person.Person.staff')
+        @patch('App.person.Person.unallocated_people')
+        @patch('App.person.Person.fellows_not_allocated_office')
+        @patch('App.person.Person.staff_not_allocated_office')
+        def test_load_people(self, mock_staff_not_allocated_office, mock_fellows_not_allocated_office, mock_unallocated_people,  mock_staff, mock_fellows, mock_livingspaces, mock_offices):
+                mock_livingspaces.__iter__.return_value = ['python']
+                mock_offices.__iter__.return_value = ['oculus', 'mordor']
+                mock_fellows.__iter__.return_value = ['Migwi']
+                mock_staff.__iter__.return_value = ['jojo', 'jimbo']
+                mock_staff_not_allocated_office.__iter__.return_value = ['jimbo']
+                mock_fellows_not_allocated_office.__iter__.return_value = []
+                mock_unallocated_people.__iter__.return_value = []
 
+                msg = self.person.load_people('elsis.db')
+                self.assertEqual(msg, 'People loaded successfully')
 
 if __name__ == '__main__':
         unittest.main()

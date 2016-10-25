@@ -51,6 +51,12 @@ class TestRoom(unittest.TestCase):
                 self.room.print_room('vanish')
                 self.assertIn('vanish', Room.total_rooms.keys())
 
+        @patch.dict('App.room.Room.total_rooms', {'Michigan': [], 'galaxy': [], 'vanish': []})
+        def test_it_prints_room_occupants(self):
+
+                msg = self.room.print_room('samsung')
+                self.assertEqual(msg, "The room does not exist!")
+
         def test_it_prints_allocations(self):
                 self.room.print_allocations('list.txt')
                 self.assertIsNotNone('list.txt')
@@ -66,7 +72,13 @@ class TestRoom(unittest.TestCase):
                 msg = self.room.commit_rooms('test_amity.db')
                 self.assertEqual(msg, 'rooms committed to session')
 
-        def test_load_rooms(self):
-                pass
+        @patch.dict('App.room.Room.total_rooms', {'Michigan': [], 'Camelot': []})
+        @patch('App.room.Room.offices')
+        @patch('App.room.Room.livingspaces')
+        def test_load_rooms(self, mock_livingspaces, mock_offices):
+                mock_livingspaces.__iter__.return_value = ['Michigan']
+                mock_offices.__iter__.return_value = ['Camelot']
 
+                msg = self.room.load_rooms('amity.db')
+                self.assertEqual(msg, 'Room data added successfully')
 
