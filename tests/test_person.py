@@ -140,6 +140,7 @@ class TestPerson(unittest.TestCase):
                 mock_fellows_not_allocated_office.__iter__.return_value = []
                 mock_unallocated_people.__iter__.return_value = []
 
+                create_db('elsis.db')
                 msg = self.person.commit_people('elsis.db')
                 self.assertEqual(msg, 'Person data commit successfull')
 

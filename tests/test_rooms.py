@@ -69,6 +69,7 @@ class TestRoom(unittest.TestCase):
                 mock_livingspaces.__iter__.return_value = ['Michigan']
                 mock_offices.__iter__.return_value = ['Camelot']
 
+                create_db('test_amity.db')
                 msg = self.room.commit_rooms('test_amity.db')
                 self.assertEqual(msg, 'rooms committed to session')
 
@@ -79,6 +80,6 @@ class TestRoom(unittest.TestCase):
                 mock_livingspaces.__iter__.return_value = ['Michigan']
                 mock_offices.__iter__.return_value = ['Camelot']
 
-                msg = self.room.load_rooms('amity.db')
+                msg = self.room.load_rooms('test_amity.db')
                 self.assertEqual(msg, 'Room data added successfully')
 
