@@ -24,9 +24,9 @@ from docopt import docopt, DocoptExit
 import cmd
 import os
 from pyfiglet import figlet_format
-from App.person import Person
-from App.room import Room
-from App.database import AmityDatabase
+from app.person import Person
+from app.room import Room
+from app.database import AmityDatabase
 
 def docopt_cmd(func):
     """
@@ -107,7 +107,8 @@ class Allocator(cmd.Cmd):
     def do_load_people(self, arg):
         '''Usage: load_people <filename>'''
         person = Person()
-        person.load_people_data(arg['<filename>'])
+        status =person.load_people_data(arg['<filename>'])
+        print(status)
 
     @docopt_cmd
     def do_print_allocations(self, arg):

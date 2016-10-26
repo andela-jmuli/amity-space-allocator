@@ -1,10 +1,8 @@
 import os
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-import room
 import person
-from models import Base, create_db
+import room
+from models import create_db
 
 
 class AmityDatabase(object):
@@ -22,7 +20,6 @@ class AmityDatabase(object):
                         person.Person.commit_people(db_name)
                 except Exception as e:
                         print e
-                        message = "Error saving data to database"
 
                 return "Data Has been Saved to Database!"
 
@@ -33,7 +30,6 @@ class AmityDatabase(object):
                                 person.Person.load_people(db_name)
                         except Exception as e:
                                 print e
-                                message = "Error loading data"
 
                         return "Data has been loaded from database"
 
