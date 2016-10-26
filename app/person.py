@@ -120,7 +120,7 @@ class Person(Amity):
                     return "NOTE: Staff members are not allocated livings paces"
                 else:
                     return "Staff member added successfully"
-                    # return "{0} Added successfully".format(self.username)
+            return "{0} Added successfully".format(self.username)
         else:
             return "oops! Someone with the username {0} already exists".format(self.username)
 

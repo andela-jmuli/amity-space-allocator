@@ -3,3 +3,5 @@ cp-env/
 *.swp
 *.db
 .coverage
+.idea/
+*.txt
