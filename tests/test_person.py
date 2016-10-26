@@ -29,8 +29,6 @@ class TestPerson(unittest.TestCase):
         mock_fellows.__iter__.return_value = []
         mock_staff.__iter__.return_value = []
 
-        # msg = self.person.add_person('Joseph', 'Muli', 'Fellow', 'Y')
-        # self.assertEqual(msg, 'JosephMuli Added successfully')
         already_present = self.person.add_person('Migwi', 'Ndungu', 'Fellow', 'Y')
         self.assertEqual(already_present, 'oops! Someone with the username MigwiNdungu already exists')
 
