@@ -2,6 +2,7 @@
 
 # Amity Space Allocator
 
+[![Coverage Status](https://coveralls.io/repos/github/andela-jmuli/amity-space-allocator/badge.svg?branch=feature-add)](https://coveralls.io/github/andela-jmuli/amity-space-allocator?branch=feature-add)
 ## Introduction:
 Amity Space Allocator is a console application that allocates rooms to fellows and staff members.
 
