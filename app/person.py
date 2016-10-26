@@ -265,7 +265,6 @@ class Person(Amity):
         """
         method called to commit person objects to database class
         """
-        global engine
         engine = create_engine('sqlite:///' + db_name, echo=False)
         Session = sessionmaker()
         Session.configure(bind=engine)
@@ -334,19 +333,17 @@ class Person(Amity):
         method called to load person data from database tables to respective data structures
         """
         engine = create_engine('sqlite:///' + db_name, echo=False)
-        session = sessionmaker()
-        session.configure(bind=engine)
+        Session = sessionmaker()
+        Session.configure(bind=engine)
         session = Session()
+
         all_people = session.query(AmityPerson).all()
-        all_fellows = session.query(AmityPerson).filter_by(job_type="fellow")
-        fellows_without_livingspaces = session.query(AmityPerson).filter_by(
-            allocated_livingspace="unallocated").filter_by(job_type="fellow")
-        fellows_without_offices = session.query(AmityPerson).filter_by(allocated_office="unallocated").filter_by(
-            job_type="fellow")
-        staff_without_offices = session.query(AmityPerson).filter_by(allocated_office="unallocated").filter_by(
-            job_type="staff")
-        all_staff = session.query(AmityPerson).filter_by(job_type="staff")
-        all_unallocated = session.query(AmityPerson).filter_by(is_accomodated="0")
+        all_fellows = [person for person in all_people if person.job_type == "fellow"]
+        all_staff = [person for person in all_people if person.job_type == "staff"]
+        fellows_without_livingspaces = [person for person in all_people if person.allocated_livingspace == "unallocated" and person.job_type == "fellow"]
+        fellows_without_offices = [person for person in all_people if person.allocated_office == "unallocated" and person.job_type == "fellow"]
+        staff_without_offices = [person for person in all_people if person.allocated_office == "unallocated" and person.job_type == "staff"]
+
         rooms = session.query(AmityRoom).all()
 
         # Adds people to the people dictionary
