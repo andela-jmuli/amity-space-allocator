@@ -1,1 +1,7 @@
-env/
+cp-env/
+*.pyc
+*.swp
+*.db
+.coverage
+.idea/
+*.txt
